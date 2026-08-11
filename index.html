@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memoria del Tesoro: Empareja objetos cotidianos en chino</title>
+
+<!-- ============ GA4 ============ -->
+<!-- 請將 G-XXXXXXXXXX 換成你自己的 GA4 測量 ID -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+
+<!-- ============ Firebase (Compat SDK，方便單檔部署) ============ -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --brick: #a8342b;
+    --brick-dark: #7c2620;
+    --cream: #f3e8d3;
+    --cream-light: #faf3e4;
+    --gold: #c9a227;
+    --gold-light: #e6c866;
+    --ink: #2b2420;
+    --jade: #3f6b52;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    font-family: 'Noto Sans TC', sans-serif;
+    text-align: center;
+    background:
+      radial-gradient(circle at 20% 10%, rgba(201,162,39,0.10), transparent 40%),
+      radial-gradient(circle at 85% 85%, rgba(168,52,43,0.08), transparent 45%),
+      var(--cream);
+    background-attachment: fixed;
+    color: var(--ink);
+    padding: 14px 16px 24px;
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  h1, h2, h3 { font-family: 'Noto Serif TC', serif; margin: 0; }
+
+  /* ---------- 共用：印章式標題 ---------- */
+  .title-banner{
+    display:inline-flex;
+    align-items:center;
+    gap:14px;
+    background: var(--brick);
+    color: var(--cream-light);
+    padding: 10px 28px;
+    border-radius: 6px;
+    box-shadow: 0 5px 0 var(--brick-dark), 0 8px 14px rgba(0,0,0,0.18);
+    position: relative;
+    margin-bottom: 6px;
+  }
+  .title-banner::before, .title-banner::after{
+    content:'';
+    position:absolute;
+    top:6px; bottom:6px;
+    width:3px;
+    background: var(--gold-light);
+    opacity:0.8;
+  }
+  .title-banner::before{ left:8px; }
+  .title-banner::after{ right:8px; }
+  .title-banner h1{
+    font-size: 1.5rem;
+    letter-spacing: 4px;
+  }
+  .subtitle{
+    margin: 8px 0 14px;
+    color: var(--brick-dark);
+    font-size: 0.9rem;
+    letter-spacing: 2px;
+  }
+
+  .cloud-divider{
+    width: 120px;
+    height: 14px;
+    margin: 14px auto;
+    opacity: 0.55;
+  }
+
+  /* ================= 姓名輸入畫面 ================= */
+  #name-screen{
+    max-width: 440px;
+    margin: 40px auto 0;
+    background: var(--cream-light);
+    border: 2px solid var(--gold);
+    border-radius: 18px;
+    padding: 40px 30px 34px;
+    box-shadow: 0 12px 30px rgba(43,36,32,0.15);
+    position: relative;
+  }
+  #name-screen::before{
+    content:'';
+    position:absolute;
+    inset: 8px;
+    border: 1px solid var(--gold-light);
+    border-radius: 12px;
+    pointer-events:none;
+  }
+  .seal{
+    width: 64px; height: 64px;
+    margin: 0 auto 14px;
+    background: var(--brick);
+    color: var(--gold-light);
+    border-radius: 8px;
+    display:flex; align-items:center; justify-content:center;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    box-shadow: 0 4px 0 var(--brick-dark);
+    transform: rotate(-3deg);
+  }
+  #name-screen p.desc{
+    color: #5c4d3f;
+    font-size: 0.92rem;
+    line-height: 1.7;
+    margin: 10px 0 22px;
+  }
+  #player-name{
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 1.05rem;
+    font-family: 'Noto Sans TC', sans-serif;
+    border: 2px solid var(--gold);
+    border-radius: 10px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+    text-align: center;
+  }
+  #player-name:focus{ border-color: var(--brick); }
+
+  .btn{
+    font-family: 'Noto Serif TC', serif;
+    padding: 12px 34px;
+    font-size: 1.05rem;
+    letter-spacing: 3px;
+    cursor: pointer;
+    background: var(--brick);
+    color: var(--cream-light);
+    border: none;
+    border-radius: 999px;
+    box-shadow: 0 5px 0 var(--brick-dark);
+    transition: transform 0.12s, box-shadow 0.12s;
+  }
+  .btn:hover{ background:#b83c32; }
+  .btn:active{ transform: translateY(3px); box-shadow: 0 2px 0 var(--brick-dark); }
+  .btn:disabled{ opacity:0.45; cursor:not-allowed; }
+  .btn.ghost{
+    background: transparent;
+    color: var(--brick);
+    border: 2px solid var(--brick);
+    box-shadow: none;
+    padding: 10px 26px;
+  }
+  .btn.ghost:active{ transform: none; }
+
+  #name-screen .btn{ margin-top: 22px; width: 100%; }
+  #name-error{
+    color: var(--brick-dark);
+    font-size: 0.82rem;
+    height: 18px;
+    margin-top: 8px;
+  }
+
+  /* ================= 遊戲畫面 ================= */
+  #game-screen{ display:none; }
+
+  .game-layout{
+    display: flex;
+    gap: 22px;
+    max-width: 1180px;
+    margin: 0 auto;
+    align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .board-col{
+    flex: 1 1 480px;
+    display: flex;
+    justify-content: center;
+    order: 2;
+  }
+  .sidebar-col{
+    flex: 0 0 240px;
+    background: var(--cream-light);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 20px 20px 24px;
+    box-shadow: 0 8px 20px rgba(43,36,32,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    text-align: left;
+    order: 3;
+  }
+  .log-col{
+    flex: 0 0 240px;
+    background: var(--cream-light);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    padding: 18px 18px 16px;
+    box-shadow: 0 8px 20px rgba(43,36,32,0.12);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    order: 1;
+    max-height: 560px;
+  }
+  .log-col h3{
+    font-family: 'Noto Serif TC', serif;
+    font-size: 1rem;
+    color: var(--brick);
+    margin: 0;
+  }
+  .log-list{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .log-list li{
+    font-size: 0.78rem;
+    line-height: 1.5;
+    padding: 7px 9px;
+    border-radius: 8px;
+    background: rgba(201,162,39,0.10);
+    color: #5c4d3f;
+    word-break: break-word;
+  }
+  .log-list li.log-success{
+    background: rgba(63,107,82,0.14);
+    color: var(--jade);
+    font-weight: 700;
+  }
+  .log-empty{
+    font-size: 0.82rem;
+    color: #a3937d;
+  }
+  .sidebar-divider{
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--gold) 0 6px, transparent 6px 10px);
+    opacity: 0.7;
+  }
+  @media (max-width: 1150px){
+    .game-layout{ flex-direction: column; align-items: center; }
+    .board-col{ order: 2; }
+    .sidebar-col{ order: 1; width: 100%; max-width: 480px; }
+    .log-col{ order: 3; width: 100%; max-width: 480px; max-height: 220px; }
+  }
+
+  .player-chip{
+    font-family: 'Noto Serif TC', serif;
+    background: var(--gold-light);
+    color: var(--brick-dark);
+    padding: 8px 16px;
+    border-radius: 999px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    align-self: flex-start;
+  }
+
+  .stats{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: 'Noto Serif TC', serif;
+    font-size: 0.98rem;
+    margin: 0;
+    color: var(--brick-dark);
+  }
+  .stats span b{ color: var(--ink); }
+
+  .toggle-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap: 10px;
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--ink);
+  }
+  .switch{
+    position: relative;
+    width: 46px; height: 26px;
+    background: #cabba0;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.2s;
+    flex-shrink:0;
+  }
+  .switch.on{ background: var(--jade); }
+  .switch::after{
+    content:'';
+    position:absolute;
+    top:3px; left:3px;
+    width:20px; height:20px;
+    background:#fff;
+    border-radius:50%;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .switch.on::after{ left: 23px; }
+
+  .action-row{
+    display:flex;
+    gap: 12px;
+    justify-content:center;
+    margin: 0;
+    flex-wrap: wrap;
+  }
+  .sidebar-col .btn{ width: 100%; }
+
+  .game-board{
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 7px;
+    max-width: min(700px, 94vw);
+    width: 100%;
+    margin: 0 auto;
+  }
+  @media (max-width: 640px){
+    .game-board{ gap: 5px; max-width: min(480px, 94vw); }
+  }
+  @media (max-width: 420px){
+    .game-board{ gap: 4px; max-width: 96vw; }
+  }
+
+  .card{
+    aspect-ratio: 1 / 1;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+    /* 讓卡片內文字用「卡片自己的寬度」縮放，而不是整個視窗寬度 */
+    container-type: inline-size;
+  }
+  .firework{
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 6;
+  }
+  .firework span{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    animation: fw-burst 0.7s ease-out forwards;
+  }
+  @keyframes fw-burst{
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2); opacity: 0; }
+  }
+  .card-inner{
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+    position: relative;
+  }
+  .card.flipped .card-inner, .card.matched .card-inner{
+    transform: rotateY(180deg);
+  }
+  .card.shake .card-inner{
+    animation: shakeCard 0.45s;
+  }
+  @keyframes shakeCard{
+    0%, 100% { transform: rotateY(0deg) translateX(0); }
+    20% { transform: rotateY(0deg) translateX(-6px); }
+    40% { transform: rotateY(0deg) translateX(6px); }
+    60% { transform: rotateY(0deg) translateX(-4px); }
+    80% { transform: rotateY(0deg) translateX(4px); }
+  }
+
+  .card-front, .card-back{
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 14px;
+    box-shadow: 0 3px 8px rgba(43,36,32,0.18);
+    overflow: hidden;
+  }
+
+  /* 卡背（未翻開）：中國風紅金雲紋 + 印章 */
+  .card-front{
+    background:
+      radial-gradient(circle at 50% 50%, rgba(230,200,102,0.25) 0%, transparent 55%),
+      repeating-linear-gradient(135deg, transparent 0 10px, rgba(230,200,102,0.10) 10px 12px),
+      linear-gradient(160deg, var(--brick) 0%, var(--brick-dark) 100%);
+    border: 2px solid var(--gold-light);
+  }
+  .card-front::before{
+    content:'';
+    position:absolute;
+    inset: 5px;
+    border: 1px solid rgba(230,200,102,0.55);
+    border-radius: 10px;
+  }
+
+  .card-back{
+    background: var(--cream-light);
+    transform: rotateY(180deg);
+    border: 2px solid var(--gold);
+    padding: 6px;
+  }
+  .card.matched .card-back{
+    background: #eaf3ec;
+    border-color: var(--jade);
+  }
+  .emoji{ font-size: clamp(2rem, 44cqw, 3.6rem); }
+  .text-content{ line-height: 1.3; text-align: center; }
+  .trad{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
+  .simp{ font-family:'Noto Serif TC', serif; font-weight: 500; color: #8a7a68; font-size: clamp(1.05rem, 23cqw, 2rem); }
+  .pinyin{ color: var(--brick); font-size: clamp(0.7rem, 13cqw, 1.1rem); margin-top: 4px; }
+  .pinyin.hidden-pinyin{ visibility: hidden; }
+
+  /* ================= 分數 / 排行榜 ================= */
+  .modal-overlay{
+    position: fixed; inset: 0;
+    background: rgba(43,36,32,0.55);
+    display:none;
+    align-items:center; justify-content:center;
+    padding: 20px;
+    z-index: 50;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal-box{
+    background: var(--cream-light);
+    border: 2px solid var(--gold);
+    border-radius: 16px;
+    max-width: 420px;
+    width: 100%;
+    padding: 30px 26px;
+    box-shadow: 0 14px 34px rgba(0,0,0,0.3);
+  }
+  .modal-box h2{ color: var(--brick); font-size: 1.3rem; margin-bottom: 6px; }
+  .score-big{
+    font-family:'Noto Serif TC', serif;
+    font-size: 2.6rem;
+    color: var(--brick);
+    margin: 10px 0 2px;
+    font-weight: 900;
+  }
+  .score-detail{
+    font-size: 0.85rem;
+    color: #6b5a48;
+    margin-bottom: 18px;
+  }
+  .leaderboard-list{
+    list-style: none;
+    padding: 0; margin: 14px 0 0;
+    max-height: 260px;
+    overflow-y: auto;
+    text-align: left;
+  }
+  .leaderboard-list li{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px dashed #d9c9a8;
+    font-size: 0.92rem;
+  }
+  .leaderboard-list li .rank{
+    font-family:'Noto Serif TC', serif;
+    font-weight:900;
+    color: var(--brick);
+    width: 22px;
+  }
+  .leaderboard-list li .lname{ flex:1; font-weight:600; }
+  .leaderboard-list li .lscore{ color: var(--jade); font-weight:700; }
+  .modal-btn-row{
+    display:flex; gap:10px; justify-content:center; margin-top: 20px; flex-wrap: wrap;
+  }
+  .loading-text{ font-size: 0.85rem; color:#8a7a68; padding: 10px 0; }
+
+  /* ================= 跑馬燈提示 ================= */
+  .marquee-banner{
+    position: fixed;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    transform: translateY(-50%);
+    z-index: 40;
+    pointer-events: none;
+    overflow: hidden;
+    /* 背景不透明度：數字介於 0（完全透明）～ 1（完全不透明）之間，數字越大背景越實心 */
+    background: rgba(43,36,32,0.94);
+    border-top: 2px solid var(--gold-light);
+    border-bottom: 2px solid var(--gold-light);
+    padding: 12px 0;
+    display: none;
+  }
+  .marquee-banner.show{ display: block; }
+  .marquee-banner .marquee-text{
+    display: inline-block;
+    white-space: nowrap;
+    font-family: 'Noto Serif TC', serif;
+    font-size: clamp(1.3rem, 4vw, 2rem);
+    font-weight: 900;
+    color: var(--gold-light);
+    padding-left: 100%;
+    animation: marquee-scroll 7s linear 1;
+  }
+  @keyframes marquee-scroll{
+    0%{ transform: translateX(0); }
+    100%{ transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<div class="marquee-banner" id="marquee-banner">
+  <span class="marquee-text" id="marquee-text"></span>
+</div>
+
+<div class="title-banner">
+  <h1>Memoria del Tesoro</h1>
+</div>
+<div class="subtitle">Empareja objetos cotidianos en chino · Un minuto de chino al día</div>
+
+<!-- ================= 姓名輸入畫面 ================= -->
+<div id="name-screen">
+  <div class="seal">名</div>
+  <h2>Comienza tu aventura de memoria</h2>
+  <p class="desc">Escribe tu nombre para entrar al ranking y demostrar tu mejor memoria.</p>
+  <input type="text" id="player-name" placeholder="Escribe tu nombre" maxlength="14">
+  <div id="name-error"></div>
+  <button class="btn" id="confirm-name-btn">Entrar al juego</button>
+</div>
+
+<!-- ================= 遊戲畫面 ================= -->
+<div id="game-screen">
+  <div class="game-layout">
+    <div class="board-col">
+      <div class="game-board" id="game-board"></div>
+    </div>
+
+    <aside class="sidebar-col">
+      <div class="player-chip">Jugador: <span id="player-name-display"></span></div>
+      <button class="btn ghost" id="view-leaderboard-btn">🏆 Ranking</button>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="stats">
+        <span>Tiempo: <b id="timer">0</b> seg</span>
+        <span>Intentos: <b id="moves">0</b></span>
+        <span>Parejas: <b id="pairs-found">0</b> / 18</span>
+      </div>
+
+      <div class="sidebar-divider"></div>
+
+      <div class="toggle-row">
+        <span>Mostrar pinyin</span>
+        <div class="switch" id="pinyin-toggle"></div>
+      </div>
+
+      <div class="action-row">
+        <button class="btn" id="start-btn">Comenzar juego</button>
+      </div>
+    </aside>
+
+    <aside class="log-col">
+      <h3>📜 Registro de la partida</h3>
+      <ul class="log-list" id="log-list">
+        <li class="log-empty">Al empezar a jugar, aquí verás cada carta que voltees</li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<!-- ================= 完成分數 Modal ================= -->
+<div class="modal-overlay" id="score-modal">
+  <div class="modal-box">
+    <h2>🎉 ¡Felicidades, completaste el juego!</h2>
+    <div class="score-big" id="final-score">0</div>
+    <div class="score-detail" id="score-breakdown"></div>
+    <div id="save-status" class="loading-text"></div>
+    <div class="modal-btn-row">
+      <button class="btn ghost" id="close-score-btn">Jugar de nuevo</button>
+      <button class="btn" id="show-leaderboard-from-score-btn">Ver ranking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= 排行榜 Modal ================= -->
+<div class="modal-overlay" id="leaderboard-modal">
+  <div class="modal-box">
+    <h2>🏆 Ranking · Top 10</h2>
+    <div id="leaderboard-loading" class="loading-text">Cargando...</div>
+    <ul class="leaderboard-list" id="leaderboard-list"></ul>
+    <div class="modal-btn-row">
+      <button class="btn ghost" id="close-leaderboard-btn">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================================
+   Firebase 設定 —— 請換成你自己的 Firebase 專案設定值
+   （Firebase Console → 專案設定 → 一般 → 你的應用程式 → SDK 設定）
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
+};
+
+let db = null;
+try{
+  firebase.initializeApp(firebaseConfig);
+  db = firebase.firestore(); // 注意：這裡使用 Firestore，不是 Realtime Database
+}catch(e){
+  console.warn('Firebase 尚未設定，排行榜功能將無法使用', e);
+}
+const LEADERBOARD_COLLECTION = 'memory_game_leaderboard';
+
+/* =========================================================
+   GA4 事件小工具
+   ========================================================= */
+function trackEvent(name, params){
+  if (typeof gtag === 'function') {
+    gtag('event', name, params || {});
+  }
+}
+
+/* =========================================================
+   詞庫（50 個生活用品，每局隨機抽 18 組 = 36 張卡）
+   ========================================================= */
+const vocab = [
+  { id: 1, emoji: '📱', trad: '手機', simp: '手机', pinyin: 'shǒujī', es: 'teléfono' },
+  { id: 2, emoji: '💻', trad: '電腦', simp: '电脑', pinyin: 'diànnǎo', es: 'computadora' },
+  { id: 3, emoji: '📺', trad: '電視', simp: '电视', pinyin: 'diànshì', es: 'televisión' },
+  { id: 4, emoji: '🛏️', trad: '床', simp: '床', pinyin: 'chuáng', es: 'cama' },
+  { id: 5, emoji: '🪑', trad: '椅子', simp: '椅子', pinyin: 'yǐzi', es: 'silla' },
+  { id: 6, emoji: '🪟', trad: '窗戶', simp: '窗户', pinyin: 'chuānghù', es: 'ventana' },
+  { id: 7, emoji: '🚪', trad: '門', simp: '门', pinyin: 'mén', es: 'puerta' },
+  { id: 8, emoji: '🚗', trad: '車', simp: '车', pinyin: 'chē', es: 'carro' },
+  { id: 9, emoji: '🚲', trad: '腳踏車', simp: '脚踏车', pinyin: 'jiǎotàchē', es: 'bicicleta' },
+  { id: 10, emoji: '✈️', trad: '飛機', simp: '飞机', pinyin: 'fēijī', es: 'avión' },
+  { id: 11, emoji: '🍎', trad: '蘋果', simp: '苹果', pinyin: 'píngguǒ', es: 'manzana' },
+  { id: 12, emoji: '🍌', trad: '香蕉', simp: '香蕉', pinyin: 'xiāngjiāo', es: 'plátano' },
+  { id: 13, emoji: '🍉', trad: '西瓜', simp: '西瓜', pinyin: 'xīguā', es: 'sandía' },
+  { id: 14, emoji: '☕', trad: '咖啡', simp: '咖啡', pinyin: 'kāfēi', es: 'café' },
+  { id: 15, emoji: '🍵', trad: '茶', simp: '茶', pinyin: 'chá', es: 'té' },
+  { id: 16, emoji: '🥛', trad: '牛奶', simp: '牛奶', pinyin: 'niúnǎi', es: 'leche' },
+  { id: 17, emoji: '🍚', trad: '飯', simp: '饭', pinyin: 'fàn', es: 'arroz' },
+  { id: 18, emoji: '🍜', trad: '麵', simp: '面', pinyin: 'miàn', es: 'fideos' },
+  { id: 19, emoji: '🥢', trad: '筷子', simp: '筷子', pinyin: 'kuàizi', es: 'palillos' },
+  { id: 20, emoji: '🥄', trad: '湯匙', simp: '汤匙', pinyin: 'tāngchí', es: 'cuchara' },
+  { id: 21, emoji: '🍴', trad: '叉子', simp: '叉子', pinyin: 'chāzi', es: 'tenedor' },
+  { id: 22, emoji: '👕', trad: '衣服', simp: '衣服', pinyin: 'yīfú', es: 'ropa' },
+  { id: 23, emoji: '👖', trad: '褲子', simp: '裤子', pinyin: 'kùzi', es: 'pantalones' },
+  { id: 24, emoji: '👗', trad: '洋裝', simp: '洋装', pinyin: 'yángzhuāng', es: 'vestido' },
+  { id: 25, emoji: '👟', trad: '鞋子', simp: '鞋子', pinyin: 'xiézi', es: 'zapatos' },
+  { id: 26, emoji: '🧦', trad: '襪子', simp: '袜子', pinyin: 'wàzi', es: 'calcetines' },
+  { id: 27, emoji: '🎒', trad: '背包', simp: '背包', pinyin: 'bēibāo', es: 'mochila' },
+  { id: 28, emoji: '👓', trad: '眼鏡', simp: '眼镜', pinyin: 'yǎnjìng', es: 'lentes' },
+  { id: 29, emoji: '⌚', trad: '手錶', simp: '手表', pinyin: 'shǒubiǎo', es: 'reloj de pulsera' },
+  { id: 30, emoji: '☂️', trad: '雨傘', simp: '雨伞', pinyin: 'yǔsǎn', es: 'paraguas' },
+  { id: 31, emoji: '📖', trad: '書', simp: '书', pinyin: 'shū', es: 'libro' },
+  { id: 32, emoji: '🖊️', trad: '筆', simp: '笔', pinyin: 'bǐ', es: 'bolígrafo' },
+  { id: 33, emoji: '📝', trad: '紙', simp: '纸', pinyin: 'zhǐ', es: 'papel' },
+  { id: 34, emoji: '✂️', trad: '剪刀', simp: '剪刀', pinyin: 'jiǎndāo', es: 'tijeras' },
+  { id: 35, emoji: '🗑️', trad: '垃圾桶', simp: '垃圾桶', pinyin: 'lājītǒng', es: 'basurero' },
+  { id: 36, emoji: '🧼', trad: '肥皂', simp: '肥皂', pinyin: 'féizào', es: 'jabón' },
+  { id: 37, emoji: '🪥', trad: '牙刷', simp: '牙刷', pinyin: 'yáshuā', es: 'cepillo de dientes' },
+  { id: 38, emoji: '🧻', trad: '衛生紙', simp: '卫生纸', pinyin: 'wèishēngzhǐ', es: 'papel higiénico' },
+  { id: 39, emoji: '🪞', trad: '鏡子', simp: '镜子', pinyin: 'jìngzi', es: 'espejo' },
+  { id: 40, emoji: '🔑', trad: '鑰匙', simp: '钥匙', pinyin: 'yàoshi', es: 'llave' },
+  { id: 41, emoji: '👛', trad: '錢包', simp: '钱包', pinyin: 'qiánbāo', es: 'billetera' },
+  { id: 42, emoji: '💵', trad: '錢', simp: '钱', pinyin: 'qián', es: 'dinero' },
+  { id: 43, emoji: '💳', trad: '信用卡', simp: '信用卡', pinyin: 'xìnyòngkǎ', es: 'tarjeta de crédito' },
+  { id: 44, emoji: '💊', trad: '藥', simp: '药', pinyin: 'yào', es: 'medicina' },
+  { id: 45, emoji: '🕰️', trad: '時鐘', simp: '时钟', pinyin: 'shízhōng', es: 'reloj de pared' },
+  { id: 46, emoji: '💡', trad: '燈', simp: '灯', pinyin: 'dēng', es: 'lámpara' },
+  { id: 47, emoji: '🔋', trad: '電池', simp: '电池', pinyin: 'diànchí', es: 'batería' },
+  { id: 48, emoji: '🔌', trad: '插頭', simp: '插头', pinyin: 'chātóu', es: 'enchufe' },
+  { id: 49, emoji: '🛋️', trad: '沙發', simp: '沙发', pinyin: 'shāfā', es: 'sofá' },
+  { id: 50, emoji: '🛁', trad: '浴缸', simp: '浴缸', pinyin: 'yùgāng', es: 'bañera' }
+];
+
+const PAIR_COUNT = 18; // 6x6 = 36 張卡 = 18 組
+
+let playerName = '';
+let gameCards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let timer = 0;
+let timerInterval;
+let isPlaying = false;
+let lockBoard = false;
+let showPinyin = false;
+let hasStartedOnce = false;
+let marqueeStage = 0; // 0=尚未觸發, 1=加油唷！, 2=你記不住嗎?
+
+const nameScreen = document.getElementById('name-screen');
+const gameScreen = document.getElementById('game-screen');
+const playerNameInput = document.getElementById('player-name');
+const nameError = document.getElementById('name-error');
+const playerNameDisplay = document.getElementById('player-name-display');
+
+const board = document.getElementById('game-board');
+const movesEl = document.getElementById('moves');
+const timerEl = document.getElementById('timer');
+const pairsFoundEl = document.getElementById('pairs-found');
+const startBtn = document.getElementById('start-btn');
+const pinyinToggle = document.getElementById('pinyin-toggle');
+
+const scoreModal = document.getElementById('score-modal');
+const finalScoreEl = document.getElementById('final-score');
+const scoreBreakdownEl = document.getElementById('score-breakdown');
+const saveStatusEl = document.getElementById('save-status');
+const closeScoreBtn = document.getElementById('close-score-btn');
+const showLeaderboardFromScoreBtn = document.getElementById('show-leaderboard-from-score-btn');
+
+const leaderboardModal = document.getElementById('leaderboard-modal');
+const leaderboardList = document.getElementById('leaderboard-list');
+const leaderboardLoading = document.getElementById('leaderboard-loading');
+const viewLeaderboardBtn = document.getElementById('view-leaderboard-btn');
+const closeLeaderboardBtn = document.getElementById('close-leaderboard-btn');
+
+const logList = document.getElementById('log-list');
+
+const marqueeBanner = document.getElementById('marquee-banner');
+const marqueeText = document.getElementById('marquee-text');
+
+/* ---------- 姓名輸入 ---------- */
+document.getElementById('confirm-name-btn').addEventListener('click', submitName);
+playerNameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') submitName(); });
+
+function submitName(){
+  const val = playerNameInput.value.trim();
+  if (!val){
+    nameError.innerText = '¡Escribe tu nombre para poder empezar!';
+    return;
+  }
+  playerName = val.slice(0, 14);
+  playerNameDisplay.innerText = playerName;
+  nameError.innerText = '';
+  nameScreen.style.display = 'none';
+  gameScreen.style.display = 'block';
+  trackEvent('name_submit', { player_name: playerName });
+}
+
+/* ---------- 拼音開關 ---------- */
+pinyinToggle.addEventListener('click', () => {
+  showPinyin = !showPinyin;
+  pinyinToggle.classList.toggle('on', showPinyin);
+  document.querySelectorAll('.pinyin').forEach(el => {
+    el.classList.toggle('hidden-pinyin', !showPinyin);
+  });
+  trackEvent('pinyin_toggle', { enabled: showPinyin });
+});
+
+/* ---------- 遊戲紀錄（最右欄） ---------- */
+function clearLog(){
+  logList.innerHTML = '<li class="log-empty">Cuando empieces a voltear cartas, aquí aparecerá el registro</li>';
+}
+
+function addLogEntry(text, isSuccess){
+  const emptyEl = logList.querySelector('.log-empty');
+  if (emptyEl) emptyEl.remove();
+
+  const li = document.createElement('li');
+  if (isSuccess) li.classList.add('log-success');
+  li.innerText = text;
+  logList.insertBefore(li, logList.firstChild);
+}
+
+/* ---------- 跑馬燈提示（需求3：只跑一次就自動消失） ---------- */
+function showMarquee(text){
+  // 先隱藏並強制重排（reflow），確保動畫每次都是從頭開始播放一次
+  marqueeBanner.classList.remove('show');
+  void marqueeBanner.offsetWidth;
+
+  marqueeText.innerText = text;
+  marqueeBanner.classList.add('show');
+}
+
+function hideMarquee(){
+  marqueeBanner.classList.remove('show');
+  marqueeText.innerText = '';
+}
+
+// 動畫（跑一次）結束後自動隱藏跑馬燈
+marqueeText.addEventListener('animationend', hideMarquee);
+
+function checkMarqueeThresholds(){
+  if (!isPlaying) return;
+
+  if (marqueeStage < 2 && (timer >= 180 || moves > 120)){
+    marqueeStage = 2;
+    showMarquee('¿Todavía no lo recuerdas?');
+    trackEvent('marquee_stage2', { timer, moves });
+  } else if (marqueeStage < 1 && (timer >= 120 || moves > 80)){
+    marqueeStage = 1;
+    showMarquee('¡Ánimo, tú puedes!');
+    trackEvent('marquee_stage1', { timer, moves });
+  }
+}
+
+function shuffle(array){
+  for (let i = array.length - 1; i > 0; i--){
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+}
+
+/* ---------- 開始遊戲 ---------- */
+function startGame(){
+  clearInterval(timerInterval);
+  timer = 0;
+  moves = 0;
+  matchedPairs = 0;
+  flippedCards = [];
+  lockBoard = false;
+  isPlaying = true;
+  timerEl.innerText = timer;
+  movesEl.innerText = moves;
+  pairsFoundEl.innerText = matchedPairs;
+  board.innerHTML = '';
+  startBtn.innerText = 'Reiniciar juego';
+  clearLog();
+  marqueeStage = 0;
+  hideMarquee();
+
+  const shuffledVocab = shuffle([...vocab]).slice(0, PAIR_COUNT);
+  gameCards = [];
+  shuffledVocab.forEach(item => {
+    gameCards.push({ ...item, cardType: 'img' });
+    gameCards.push({ ...item, cardType: 'text' });
+  });
+  gameCards = shuffle(gameCards);
+
+  gameCards.forEach((card) => {
+    const cardEl = document.createElement('div');
+    cardEl.classList.add('card');
+    cardEl.dataset.id = card.id;
+    cardEl.dataset.type = card.cardType;
+
+    let contentHTML = '';
+    if (card.cardType === 'img'){
+      contentHTML = `<div class="emoji">${card.emoji}</div>`;
+    } else {
+      contentHTML = `
+        <div class="text-content">
+          <div class="trad">${card.trad}</div>
+          <div class="simp">${card.simp}</div>
+          <div class="pinyin${showPinyin ? '' : ' hidden-pinyin'}">${card.pinyin}</div>
+        </div>
+      `;
+    }
+
+    cardEl.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front"></div>
+        <div class="card-back">${contentHTML}</div>
+      </div>
+    `;
+
+    cardEl.addEventListener('click', flipCard);
+    board.appendChild(cardEl);
+  });
+
+  timerInterval = setInterval(() => {
+    timer++;
+    timerEl.innerText = timer;
+    checkMarqueeThresholds();
+  }, 1000);
+
+  trackEvent('game_start', { player_name: playerName, pair_count: PAIR_COUNT });
+  hasStartedOnce = true;
+}
+
+/* ---------- 翻牌 ---------- */
+function flipCard(){
+  if (!isPlaying || lockBoard) return;
+  if (this.classList.contains('flipped') || this.classList.contains('matched')) return;
+
+  this.classList.add('flipped');
+  flippedCards.push(this);
+
+  // 需求2：不論翻到圖卡或文字卡，都念出繁體中文語音
+  const wordInfo = vocab.find(v => v.id == this.dataset.id);
+  speakText(wordInfo.trad);
+
+  trackEvent('card_flip', { card_type: this.dataset.type, word: wordInfo.trad });
+
+  const cardTypeLabel = this.dataset.type === 'img' ? 'carta de imagen' : 'carta de texto';
+  addLogEntry(`Volteaste una ${cardTypeLabel}: ${wordInfo.trad}/${wordInfo.simp}/${wordInfo.pinyin}/${wordInfo.es}`, false);
+
+  if (flippedCards.length === 2){
+    moves++;
+    movesEl.innerText = moves;
+    checkMarqueeThresholds();
+    checkForMatch();
+  }
+}
+
+function speakText(text){
+  if ('speechSynthesis' in window){
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'zh-TW';
+    // 語速：數字介於 0.1（很慢）～ 10（很快）之間，1 是正常語速，數字越小念得越慢
+    utterance.rate = 0.75;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+const FLIP_DURATION = 500;      // 需與 CSS 的 .card-inner transition 時間一致
+const MISMATCH_VIEW_TIME = 1100; // 需求1：配對失敗時，多停留一段時間讓玩家看清楚文字
+
+function checkForMatch(){
+  lockBoard = true;
+  const isMatch = flippedCards[0].dataset.id === flippedCards[1].dataset.id;
+  const [cardA, cardB] = flippedCards;
+  const wordInfo = vocab.find(v => v.id == cardA.dataset.id);
+
+  if (isMatch){
+    // 等兩張卡片的翻面動畫都跑完，再放煙火，效果比較清楚
+    setTimeout(() => {
+      cardA.classList.add('matched');
+      cardB.classList.add('matched');
+      triggerFirework(cardA);
+      triggerFirework(cardB);
+    }, FLIP_DURATION);
+
+    matchedPairs++;
+    pairsFoundEl.innerText = matchedPairs;
+    trackEvent('match_success', { pairs_found: matchedPairs, moves: moves });
+    addLogEntry(`¡Pareja encontrada!: ${wordInfo.trad}`, true);
+    flippedCards = [];
+    lockBoard = false;
+
+    if (matchedPairs === PAIR_COUNT){
+      clearInterval(timerInterval);
+      isPlaying = false;
+      setTimeout(finishGame, FLIP_DURATION + 500);
+    }
+  } else {
+    trackEvent('match_fail', { moves: moves });
+
+    // 需求1：先等翻面動畫跑完、再停留一段時間讓玩家看清楚，最後才震動並蓋回卡片
+    setTimeout(() => {
+      cardA.classList.add('shake');
+      cardB.classList.add('shake');
+
+      setTimeout(() => {
+        cardA.classList.remove('flipped', 'shake');
+        cardB.classList.remove('flipped', 'shake');
+        flippedCards = [];
+        lockBoard = false;
+      }, 450);
+    }, FLIP_DURATION + MISMATCH_VIEW_TIME);
+  }
+}
+
+/* 需求3：配對成功時，卡片周圍放煙火粒子 */
+function triggerFirework(cardEl){
+  const container = document.createElement('div');
+  container.className = 'firework';
+  const colors = ['#e6c866', '#a8342b', '#3f6b52', '#c9a227'];
+  const count = 10;
+
+  for (let i = 0; i < count; i++){
+    const dot = document.createElement('span');
+    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.3;
+    const distance = 26 + Math.random() * 20;
+    const dx = Math.cos(angle) * distance;
+    const dy = Math.sin(angle) * distance;
+    dot.style.setProperty('--dx', dx + 'px');
+    dot.style.setProperty('--dy', dy + 'px');
+    dot.style.background = colors[i % colors.length];
+    dot.style.animationDelay = (Math.random() * 0.05) + 's';
+    container.appendChild(dot);
+  }
+
+  cardEl.appendChild(container);
+  setTimeout(() => container.remove(), 800);
+}
+
+/* =========================================================
+   計分機制
+   -----------------------------------------------------------
+   總分 = 準確度分數（滿分 700） + 速度獎勵（滿分 300）
+
+   1) 準確度分數 = (完美翻牌次數 18 / 實際翻牌次數) x 700
+      - 完美記憶（每次翻牌都配對成功，共翻 18 次）= 700 分
+      - 翻牌次數越多（代表猜錯越多次），比例分數越低
+
+   2) 速度獎勵 = 最多 300 分，每花 1 秒扣 1 分（超過 300 秒則獎勵為 0）
+      - 300 秒（5 分鐘）內完成才有速度獎勵
+      - 鼓勵學生「記得又快又準」，但準確度佔比更高，
+        避免學生為了衝快而亂猜卡片
+
+   總分上限 = 1000 分（理論值，18 次翻牌 + 0 秒完成）
+   ========================================================= */
+function calculateScore(pairs, movesUsed, seconds){
+  const accuracy = pairs / movesUsed; // 0 ~ 1
+  const accuracyScore = accuracy * 700;
+  const timeBonus = Math.max(0, 300 - seconds);
+  return Math.round(accuracyScore + timeBonus);
+}
+
+function finishGame(){
+  hideMarquee();
+  const score = calculateScore(matchedPairs, moves, timer);
+  finalScoreEl.innerText = score;
+  scoreBreakdownEl.innerText = `Tiempo: ${timer} seg · Intentos: ${moves}`;
+  saveStatusEl.innerText = 'Guardando tu puntaje en el ranking...';
+  scoreModal.classList.add('show');
+
+  trackEvent('game_complete', {
+    player_name: playerName,
+    score: score,
+    moves: moves,
+    time_seconds: timer
+  });
+
+  saveScoreToLeaderboard(score);
+}
+
+/* ---------- Firebase 排行榜 ---------- */
+function saveScoreToLeaderboard(score){
+  if (!db){
+    saveStatusEl.innerText = '(El ranking aún no está conectado; revisa la configuración de Firebase)';
+    return;
+  }
+  db.collection(LEADERBOARD_COLLECTION).add({
+    name: playerName,
+    score: score,
+    moves: moves,
+    timeSeconds: timer,
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => {
+    saveStatusEl.innerText = '¡Tu puntaje se guardó en el ranking!';
+    trackEvent('leaderboard_submit', { player_name: playerName, score: score });
+  }).catch((err) => {
+    console.error(err);
+    saveStatusEl.innerText = 'No se pudo guardar. Revisa tu conexión o la configuración de Firebase.';
+  });
+}
+
+function loadLeaderboard(){
+  leaderboardLoading.style.display = 'block';
+  leaderboardList.innerHTML = '';
+
+  if (!db){
+    leaderboardLoading.innerText = 'El ranking aún no está conectado; revisa la configuración de Firebase';
+    return;
+  }
+
+  db.collection(LEADERBOARD_COLLECTION)
+    .orderBy('score', 'desc')
+    .limit(10)
+    .get()
+    .then((snapshot) => {
+      leaderboardLoading.style.display = 'none';
+      if (snapshot.empty){
+        leaderboardList.innerHTML = '<li>¡Todavía nadie está en el ranking. Sé el primero!</li>';
+        return;
+      }
+      let rank = 1;
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span class="rank">${rank}</span>
+          <span class="lname">${d.name}</span>
+          <span class="lscore">${d.score} pts</span>
+        `;
+        leaderboardList.appendChild(li);
+        rank++;
+      });
+    })
+    .catch((err) => {
+      console.error(err);
+      leaderboardLoading.innerText = 'No se pudo cargar el ranking';
+    });
+}
+
+/* ---------- Modal 控制 ---------- */
+closeScoreBtn.addEventListener('click', () => {
+  scoreModal.classList.remove('show');
+  startBtn.focus();
+});
+showLeaderboardFromScoreBtn.addEventListener('click', () => {
+  scoreModal.classList.remove('show');
+  openLeaderboard();
+});
+viewLeaderboardBtn.addEventListener('click', openLeaderboard);
+closeLeaderboardBtn.addEventListener('click', () => {
+  leaderboardModal.classList.remove('show');
+});
+
+function openLeaderboard(){
+  leaderboardModal.classList.add('show');
+  loadLeaderboard();
+  trackEvent('leaderboard_view', { player_name: playerName });
+}
+
+startBtn.addEventListener('click', startGame);
+</script>
+</body>
+</html>
