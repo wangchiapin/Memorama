@@ -436,6 +436,12 @@
     border-color: var(--jade);
   }
   .emoji{ font-size: clamp(2rem, 44cqw, 3.6rem); }
+  .item-photo{
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+    border-radius: 8px;
+  }
   .text-content{ line-height: 1.3; text-align: center; }
   .trad{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
   .simp{ font-family:'Noto Serif TC', serif; font-weight: 500; color: #8a7a68; font-size: clamp(1.05rem, 23cqw, 2rem); }
@@ -874,7 +880,9 @@ function startGame(){
 
     let contentHTML = '';
     if (card.cardType === 'img'){
-      contentHTML = `<div class="emoji">${card.emoji}</div>`;
+      // 優先嘗試載入 images/{id}.png 這張自訂圖片；
+      // 如果檔案不存在（404），下面的 error 事件會自動改回 emoji，不會讓玩家看到破圖
+      contentHTML = `<img class="item-photo" src="images/${card.id}.png" alt="${card.trad}" data-fallback-emoji="${card.emoji}">`;
     } else {
       contentHTML = `
         <div class="text-content">
@@ -894,6 +902,17 @@ function startGame(){
 
     cardEl.addEventListener('click', flipCard);
     board.appendChild(cardEl);
+
+    // 圖片卡：如果 images/{id}.png 不存在，自動改回原本的 emoji，不需要手動改程式碼
+    const photoEl = cardEl.querySelector('.item-photo');
+    if (photoEl){
+      photoEl.addEventListener('error', function(){
+        const emojiDiv = document.createElement('div');
+        emojiDiv.className = 'emoji';
+        emojiDiv.textContent = this.dataset.fallbackEmoji;
+        this.replaceWith(emojiDiv);
+      }, { once: true });
+    }
   });
 
   timerInterval = setInterval(() => {
