@@ -339,10 +339,17 @@
     margin: 0 auto;
   }
   @media (max-width: 640px){
-    .game-board{ gap: 5px; max-width: min(480px, 94vw); }
+    /* 手機版：牌卡區跳脫外層留白，貼齊螢幕左右兩側顯示 */
+    .board-col{
+      width: 100vw;
+      margin-left: calc(-50vw + 50%);
+      padding: 0 6px;
+    }
+    .game-board{ gap: 5px; max-width: 100%; }
   }
   @media (max-width: 420px){
-    .game-board{ gap: 4px; max-width: 96vw; }
+    .game-board{ gap: 4px; }
+    .board-col{ padding: 0 4px; }
   }
 
   .card{
