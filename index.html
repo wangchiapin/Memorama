@@ -7,13 +7,12 @@
 
 <!-- ============ GA4 ============ -->
 <!-- 請將 G-XXXXXXXXXX 換成你自己的 GA4 測量 ID -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-DNMYYXS600"></script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
-  gtag('config', 'G-DNMYYXS600');
+  gtag('config', 'G-XXXXXXXXXX');
 </script>
 
 <!-- ============ Firebase (Compat SDK，方便單檔部署) ============ -->
@@ -451,8 +450,7 @@
     border-radius: 8px;
   }
   .text-content{ line-height: 1.3; text-align: center; }
-  .trad{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
-  .simp{ font-family:'Noto Serif TC', serif; font-weight: 500; color: #8a7a68; font-size: clamp(1.05rem, 23cqw, 2rem); }
+  .trad, .simp{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
   .pinyin{ color: var(--brick); font-size: clamp(0.7rem, 13cqw, 1.1rem); margin-top: 4px; }
   .pinyin.hidden-pinyin{ visibility: hidden; }
 
@@ -497,11 +495,21 @@
   }
   .leaderboard-list li{
     display:flex;
-    align-items:center;
-    gap: 10px;
-    padding: 8px 10px;
+    flex-direction: column;
+    gap: 3px;
+    padding: 9px 10px;
     border-bottom: 1px dashed #d9c9a8;
     font-size: 0.92rem;
+  }
+  .leaderboard-list li .row-top{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+  }
+  .leaderboard-list li .row-meta{
+    font-size: 0.74rem;
+    color: #8a7a68;
+    padding-left: 32px;
   }
   .leaderboard-list li .rank{
     font-family:'Noto Serif TC', serif;
@@ -643,13 +651,12 @@
    （Firebase Console → 專案設定 → 一般 → 你的應用程式 → SDK 設定）
    ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60",
-  authDomain: "memorma-24dab.firebaseapp.com",
-  projectId: "memorma-24dab",
-  storageBucket: "memorma-24dab.firebasestorage.app",
-  messagingSenderId: "806709458465",
-  appId: "1:806709458465:web:f0d12acb2f911f2f165560",
-  measurementId: "G-RS1DJ7DH50"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 let db = null;
@@ -660,7 +667,6 @@ try{
   console.warn('Firebase 尚未設定，排行榜功能將無法使用', e);
 }
 const LEADERBOARD_COLLECTION = 'memory_game_leaderboard';
-
 
 /* =========================================================
    GA4 事件小工具
@@ -1129,9 +1135,12 @@ function loadLeaderboard(){
         const d = doc.data();
         const li = document.createElement('li');
         li.innerHTML = `
-          <span class="rank">${rank}</span>
-          <span class="lname">${d.name}</span>
-          <span class="lscore">${d.score} pts</span>
+          <div class="row-top">
+            <span class="rank">${rank}</span>
+            <span class="lname">${d.name}</span>
+            <span class="lscore">${d.score} pts</span>
+          </div>
+          <div class="row-meta">⏱️ ${d.timeSeconds ?? '—'} seg · 🔄 ${d.moves ?? '—'} intentos</div>
         `;
         leaderboardList.appendChild(li);
         rank++;
