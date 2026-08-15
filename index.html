@@ -444,10 +444,16 @@
   }
   .emoji{ font-size: clamp(2rem, 44cqw, 3.6rem); }
   .item-photo{
-    width: 78%;
-    height: 78%;
+    width: 88%;
+    height: 88%;
     object-fit: contain;
-    border-radius: 8px;
+    border-radius: 6px;
+    /* 因為原圖（300x300）裡的物品本身偏小、留白較多，
+       這裡用 scale() 把圖片整體放大，卡片本身的 overflow:hidden
+       會自動裁掉超出範圍的部分，讓物品視覺上填滿牌卡但又不會被拉伸變形。
+       數字越大，裁掉的留白越多、物品看起來越大；
+       如果之後有些物品被裁過頭，把這個數字調小一點即可（例如 1.15）。 */
+    transform: scale(1.35);
   }
   .text-content{ line-height: 1.3; text-align: center; }
   .trad, .simp{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
@@ -651,13 +657,12 @@
    （Firebase Console → 專案設定 → 一般 → 你的應用程式 → SDK 設定）
    ========================================================= */
 const firebaseConfig = {
-  apiKey: "AIzaSyC_YSDn2OH6_GKKwCq0d8QFNl3fYXzTC60",
-  authDomain: "memorma-24dab.firebaseapp.com",
-  projectId: "memorma-24dab",
-  storageBucket: "memorma-24dab.firebasestorage.app",
-  messagingSenderId: "806709458465",
-  appId: "1:806709458465:web:f0d12acb2f911f2f165560",
-  measurementId: "G-RS1DJ7DH50"
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "YOUR_SENDER_ID",
+  appId: "YOUR_APP_ID"
 };
 
 let db = null;
@@ -899,7 +904,7 @@ function startGame(){
     if (card.cardType === 'img'){
       // 優先嘗試載入 images/{id}.png 這張自訂圖片；
       // 如果檔案不存在（404），下面的 error 事件會自動改回 emoji，不會讓玩家看到破圖
-      contentHTML = `<img class="item-photo" src="images/images${card.id}.png" alt="${card.trad}" data-fallback-emoji="${card.emoji}">`;
+      contentHTML = `<img class="item-photo" src="images/${card.id}.png" alt="${card.trad}" data-fallback-emoji="${card.emoji}">`;
     } else {
       contentHTML = `
         <div class="text-content">
