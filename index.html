@@ -904,7 +904,7 @@ function startGame(){
     if (card.cardType === 'img'){
       // 優先嘗試載入 images/{id}.png 這張自訂圖片；
       // 如果檔案不存在（404），下面的 error 事件會自動改回 emoji，不會讓玩家看到破圖
-      contentHTML = `<img class="item-photo" src="images${card.id}.png" alt="${card.trad}" data-fallback-emoji="${card.emoji}">`;
+      contentHTML = `<img class="item-photo" src="images/images${card.id}.png" alt="${card.trad}" data-fallback-emoji="${card.emoji}">`;
     } else {
       contentHTML = `
         <div class="text-content">
