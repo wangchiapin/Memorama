@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Memoria del Tesoro: Empareja objetos cotidianos en chino</title>
+<title>Memorama: Empareja objetos cotidianos en chino</title>
 
 <!-- ============ GA4 ============ -->
 <!-- 請將 G-XXXXXXXXXX 換成你自己的 GA4 測量 ID -->
@@ -20,29 +20,33 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700;900&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Noto+Serif+TC:wght@700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --brick: #a8342b;
-    --brick-dark: #7c2620;
-    --cream: #f3e8d3;
-    --cream-light: #faf3e4;
-    --gold: #c9a227;
-    --gold-light: #e6c866;
-    --ink: #2b2420;
-    --jade: #3f6b52;
+    --lego-red: #D6180E;
+    --lego-red-dark: #9E0F08;
+    --lego-yellow: #FFD500;
+    --lego-yellow-dark: #E0AF00;
+    --lego-blue: #0060B0;
+    --lego-blue-dark: #003E75;
+    --lego-green: #00A650;
+    --lego-green-dark: #00793B;
+    --ink: #1A1A1A;
+    --white: #FFFFFF;
+    --plate: #ECEEF1;
+    --paper: #FFFDF7;
   }
 
   *{box-sizing:border-box;}
 
   body{
-    font-family: 'Noto Sans TC', sans-serif;
+    font-family: 'Baloo 2', 'Noto Sans TC', sans-serif;
     text-align: center;
     background:
-      radial-gradient(circle at 20% 10%, rgba(201,162,39,0.10), transparent 40%),
-      radial-gradient(circle at 85% 85%, rgba(168,52,43,0.08), transparent 45%),
-      var(--cream);
+      radial-gradient(circle at 17px 17px, rgba(0,0,0,0.07) 4px, transparent 4.5px),
+      linear-gradient(180deg, #EEF1F5 0%, #DEE3EA 100%);
+    background-size: 34px 34px, 100% 100%;
     background-attachment: fixed;
     color: var(--ink);
     padding: 14px 16px 24px;
@@ -50,129 +54,125 @@
     min-height: 100vh;
   }
 
-  h1, h2, h3 { font-family: 'Noto Serif TC', serif; margin: 0; }
+  h1, h2, h3 { font-family: 'Baloo 2', 'Noto Serif TC', sans-serif; margin: 0; font-weight: 800; }
 
-  /* ---------- 共用：印章式標題 ---------- */
+  /* ---------- 共用：樂高積木標題 ---------- */
   .title-banner{
     display:inline-flex;
     align-items:center;
     gap:14px;
-    background: var(--brick);
-    color: var(--cream-light);
-    padding: 10px 28px;
-    border-radius: 6px;
-    box-shadow: 0 5px 0 var(--brick-dark), 0 8px 14px rgba(0,0,0,0.18);
+    background: var(--lego-red);
+    color: var(--white);
+    padding: 12px 30px 14px;
+    border: 4px solid var(--ink);
+    border-radius: 14px;
+    box-shadow: 0 7px 0 var(--lego-red-dark), 0 7px 0 4px var(--ink), 0 12px 18px rgba(0,0,0,0.22);
     position: relative;
-    margin-bottom: 6px;
+    margin: 10px 0 22px;
   }
-  .title-banner::before, .title-banner::after{
+  .title-banner::before{
     content:'';
     position:absolute;
-    top:6px; bottom:6px;
-    width:3px;
-    background: var(--gold-light);
-    opacity:0.8;
+    top:-13px; left:50%;
+    transform: translateX(-50%);
+    width: 66%;
+    min-width: 120px;
+    height: 15px;
+    background-image:
+      radial-gradient(circle, var(--lego-red) 0 38%, var(--ink) 39% 44%, transparent 45%);
+    background-size: 30px 30px;
+    background-position: center;
+    background-repeat: repeat-x;
   }
-  .title-banner::before{ left:8px; }
-  .title-banner::after{ right:8px; }
   .title-banner h1{
-    font-size: 1.5rem;
-    letter-spacing: 4px;
+    font-size: 1.7rem;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 0 var(--lego-red-dark);
   }
   .subtitle{
-    margin: 8px 0 14px;
-    color: var(--brick-dark);
-    font-size: 0.9rem;
-    letter-spacing: 2px;
-  }
-
-  .cloud-divider{
-    width: 120px;
-    height: 14px;
-    margin: 14px auto;
-    opacity: 0.55;
+    margin: 0 0 18px;
+    color: var(--lego-blue-dark);
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 1px;
   }
 
   /* ================= 姓名輸入畫面 ================= */
   #name-screen{
     max-width: 440px;
-    margin: 40px auto 0;
-    background: var(--cream-light);
-    border: 2px solid var(--gold);
-    border-radius: 18px;
+    margin: 30px auto 0;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 20px;
     padding: 40px 30px 34px;
-    box-shadow: 0 12px 30px rgba(43,36,32,0.15);
+    box-shadow: 0 8px 0 var(--ink), 0 16px 26px rgba(0,0,0,0.18);
     position: relative;
   }
-  #name-screen::before{
-    content:'';
-    position:absolute;
-    inset: 8px;
-    border: 1px solid var(--gold-light);
-    border-radius: 12px;
-    pointer-events:none;
-  }
   .seal{
-    width: 64px; height: 64px;
+    width: 66px; height: 66px;
     margin: 0 auto 14px;
-    background: var(--brick);
-    color: var(--gold-light);
-    border-radius: 8px;
+    background: var(--lego-yellow);
+    color: var(--ink);
+    border: 4px solid var(--ink);
+    border-radius: 50%;
     display:flex; align-items:center; justify-content:center;
     font-family: 'Noto Serif TC', serif;
     font-size: 1.6rem;
     font-weight: 900;
-    box-shadow: 0 4px 0 var(--brick-dark);
-    transform: rotate(-3deg);
+    box-shadow: 0 5px 0 var(--lego-yellow-dark);
   }
   #name-screen p.desc{
-    color: #5c4d3f;
+    color: #4a4a4a;
     font-size: 0.92rem;
     line-height: 1.7;
     margin: 10px 0 22px;
+    font-weight: 500;
   }
   #player-name{
     width: 100%;
     padding: 12px 16px;
     font-size: 1.05rem;
-    font-family: 'Noto Sans TC', sans-serif;
-    border: 2px solid var(--gold);
+    font-family: 'Baloo 2', 'Noto Sans TC', sans-serif;
+    font-weight: 600;
+    border: 3px solid var(--ink);
     border-radius: 10px;
     background: #fff;
     color: var(--ink);
     outline: none;
     text-align: center;
   }
-  #player-name:focus{ border-color: var(--brick); }
+  #player-name:focus{ border-color: var(--lego-blue); }
 
   .btn{
-    font-family: 'Noto Serif TC', serif;
-    padding: 12px 34px;
+    font-family: 'Baloo 2', 'Noto Serif TC', sans-serif;
+    padding: 13px 32px;
     font-size: 1.05rem;
-    letter-spacing: 3px;
+    font-weight: 700;
+    letter-spacing: 1px;
     cursor: pointer;
-    background: var(--brick);
-    color: var(--cream-light);
-    border: none;
-    border-radius: 999px;
-    box-shadow: 0 5px 0 var(--brick-dark);
-    transition: transform 0.12s, box-shadow 0.12s;
+    background: var(--lego-yellow);
+    color: var(--ink);
+    border: 3px solid var(--ink);
+    border-radius: 12px;
+    box-shadow: 0 6px 0 var(--ink);
+    transition: transform 0.1s, box-shadow 0.1s;
   }
-  .btn:hover{ background:#b83c32; }
-  .btn:active{ transform: translateY(3px); box-shadow: 0 2px 0 var(--brick-dark); }
+  .btn:hover{ background: var(--lego-yellow-dark); }
+  .btn:active{ transform: translateY(6px); box-shadow: 0 0 0 var(--ink); }
   .btn:disabled{ opacity:0.45; cursor:not-allowed; }
   .btn.ghost{
-    background: transparent;
-    color: var(--brick);
-    border: 2px solid var(--brick);
-    box-shadow: none;
-    padding: 10px 26px;
+    background: var(--white);
+    color: var(--lego-blue-dark);
+    border: 3px solid var(--lego-blue-dark);
+    box-shadow: 0 6px 0 var(--lego-blue-dark);
+    padding: 11px 26px;
   }
-  .btn.ghost:active{ transform: none; }
+  .btn.ghost:active{ transform: translateY(6px); box-shadow: 0 0 0 var(--lego-blue-dark); }
 
   #name-screen .btn{ margin-top: 22px; width: 100%; }
   #name-error{
-    color: var(--brick-dark);
+    color: var(--lego-red);
+    font-weight: 700;
     font-size: 0.82rem;
     height: 18px;
     margin-top: 8px;
@@ -198,11 +198,11 @@
   }
   .sidebar-col{
     flex: 0 0 240px;
-    background: var(--cream-light);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 18px;
     padding: 20px 20px 24px;
-    box-shadow: 0 8px 20px rgba(43,36,32,0.12);
+    box-shadow: 0 7px 0 var(--ink), 0 12px 20px rgba(0,0,0,0.14);
     display: flex;
     flex-direction: column;
     gap: 16px;
@@ -211,11 +211,11 @@
   }
   .log-col{
     flex: 0 0 240px;
-    background: var(--cream-light);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 18px;
     padding: 18px 18px 16px;
-    box-shadow: 0 8px 20px rgba(43,36,32,0.12);
+    box-shadow: 0 7px 0 var(--ink), 0 12px 20px rgba(0,0,0,0.14);
     display: flex;
     flex-direction: column;
     gap: 10px;
@@ -224,9 +224,10 @@
     max-height: 560px;
   }
   .log-col h3{
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Baloo 2', 'Noto Serif TC', serif;
     font-size: 1rem;
-    color: var(--brick);
+    font-weight: 700;
+    color: var(--lego-red);
     margin: 0;
   }
   .log-list{
@@ -243,23 +244,27 @@
     line-height: 1.5;
     padding: 7px 9px;
     border-radius: 8px;
-    background: rgba(201,162,39,0.10);
-    color: #5c4d3f;
+    background: var(--plate);
+    border: 2px solid #d3d6db;
+    color: #4a4a4a;
+    font-weight: 500;
     word-break: break-word;
   }
   .log-list li.log-success{
-    background: rgba(63,107,82,0.14);
-    color: var(--jade);
+    background: #e2f7ea;
+    border-color: var(--lego-green);
+    color: var(--lego-green-dark);
     font-weight: 700;
   }
   .log-empty{
     font-size: 0.82rem;
-    color: #a3937d;
+    color: #9a9a9a;
   }
   .sidebar-divider{
-    height: 1px;
-    background: repeating-linear-gradient(90deg, var(--gold) 0 6px, transparent 6px 10px);
-    opacity: 0.7;
+    height: 3px;
+    background: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px);
+    opacity: 0.25;
+    border-radius: 2px;
   }
   @media (max-width: 1150px){
     .game-layout{ flex-direction: column; align-items: center; }
@@ -269,10 +274,11 @@
   }
 
   .player-chip{
-    font-family: 'Noto Serif TC', serif;
-    background: var(--gold-light);
-    color: var(--brick-dark);
+    font-family: 'Baloo 2', 'Noto Serif TC', serif;
+    background: var(--lego-blue);
+    color: var(--white);
     padding: 8px 16px;
+    border: 3px solid var(--ink);
     border-radius: 999px;
     font-size: 0.9rem;
     font-weight: 700;
@@ -283,12 +289,13 @@
     display:flex;
     flex-direction: column;
     gap: 8px;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Baloo 2', 'Noto Serif TC', serif;
     font-size: 0.98rem;
+    font-weight: 600;
     margin: 0;
-    color: var(--brick-dark);
+    color: var(--ink);
   }
-  .stats span b{ color: var(--ink); }
+  .stats span b{ color: var(--lego-red); }
 
   .toggle-row{
     display:flex;
@@ -297,27 +304,29 @@
     gap: 10px;
     margin: 0;
     font-size: 0.88rem;
+    font-weight: 600;
     color: var(--ink);
   }
   .switch{
     position: relative;
-    width: 46px; height: 26px;
-    background: #cabba0;
+    width: 48px; height: 27px;
+    background: #c7cbd1;
+    border: 2px solid var(--ink);
     border-radius: 999px;
     cursor: pointer;
     transition: background 0.2s;
     flex-shrink:0;
   }
-  .switch.on{ background: var(--jade); }
+  .switch.on{ background: var(--lego-green); }
   .switch::after{
     content:'';
     position:absolute;
-    top:3px; left:3px;
-    width:20px; height:20px;
+    top:2px; left:2px;
+    width:19px; height:19px;
     background:#fff;
+    border: 2px solid var(--ink);
     border-radius:50%;
     transition: left 0.2s;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
   }
   .switch.on::after{ left: 23px; }
 
@@ -333,7 +342,7 @@
   .game-board{
     display: grid;
     grid-template-columns: repeat(6, 1fr);
-    gap: 7px;
+    gap: 8px;
     max-width: min(700px, 94vw);
     width: 100%;
     margin: 0 auto;
@@ -345,10 +354,10 @@
       margin-left: calc(-50vw + 50%);
       padding: 0 6px;
     }
-    .game-board{ gap: 5px; max-width: 100%; }
+    .game-board{ gap: 6px; max-width: 100%; }
   }
   @media (max-width: 420px){
-    .game-board{ gap: 4px; }
+    .game-board{ gap: 5px; }
     .board-col{ padding: 0 4px; }
   }
 
@@ -371,15 +380,16 @@
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+    border: 1.5px solid var(--ink);
+    border-radius: 3px;
     transform: translate(-50%, -50%);
     animation: fw-burst 0.7s ease-out forwards;
   }
   @keyframes fw-burst{
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.2); opacity: 0; }
+    0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+    100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0.3) rotate(90deg); opacity: 0; }
   }
   .card-inner{
     width: 100%;
@@ -411,36 +421,53 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border-radius: 14px;
-    box-shadow: 0 3px 8px rgba(43,36,32,0.18);
+    border-radius: 12px;
+    border: 3px solid var(--ink);
     overflow: hidden;
   }
 
-  /* 卡背（未翻開）：中國風紅金雲紋 + 印章 */
+  /* 卡背（未翻開）：樂高積木上蓋，圓形凸粒 + 塑膠光澤 */
   .card-front{
-    background:
-      radial-gradient(circle at 50% 50%, rgba(230,200,102,0.25) 0%, transparent 55%),
-      repeating-linear-gradient(135deg, transparent 0 10px, rgba(230,200,102,0.10) 10px 12px),
-      linear-gradient(160deg, var(--brick) 0%, var(--brick-dark) 100%);
-    border: 2px solid var(--gold-light);
+    background: linear-gradient(155deg, var(--brick-color, var(--lego-red)) 0%, var(--brick-color-dark, var(--lego-red-dark)) 100%);
+    box-shadow:
+      inset 0 4px 0 rgba(255,255,255,0.35),
+      inset 0 -7px 0 rgba(0,0,0,0.22);
   }
   .card-front::before{
     content:'';
     position:absolute;
-    inset: 5px;
-    border: 1px solid rgba(230,200,102,0.55);
-    border-radius: 10px;
+    inset: 0;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0.15) 60%, transparent 68%),
+      radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0.15) 60%, transparent 68%),
+      radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0.15) 60%, transparent 68%),
+      radial-gradient(circle, rgba(255,255,255,0.5) 0%, rgba(255,255,255,0.15) 45%, rgba(0,0,0,0.15) 60%, transparent 68%);
+    background-size: 34% 34%;
+    background-position: 26% 26%, 74% 26%, 26% 74%, 74% 74%;
+    background-repeat: no-repeat;
+    opacity: 0.9;
   }
+  /* 六種積木配色，隨機分布讓牌背看起來像一盒樂高積木 */
+  .card:nth-child(8n+1) .card-front{ --brick-color: var(--lego-red); --brick-color-dark: var(--lego-red-dark); }
+  .card:nth-child(8n+2) .card-front{ --brick-color: var(--lego-yellow); --brick-color-dark: var(--lego-yellow-dark); }
+  .card:nth-child(8n+3) .card-front{ --brick-color: var(--lego-blue); --brick-color-dark: var(--lego-blue-dark); }
+  .card:nth-child(8n+4) .card-front{ --brick-color: var(--lego-green); --brick-color-dark: var(--lego-green-dark); }
+  .card:nth-child(8n+5) .card-front{ --brick-color: var(--lego-blue); --brick-color-dark: var(--lego-blue-dark); }
+  .card:nth-child(8n+6) .card-front{ --brick-color: var(--lego-red); --brick-color-dark: var(--lego-red-dark); }
+  .card:nth-child(8n+7) .card-front{ --brick-color: var(--lego-green); --brick-color-dark: var(--lego-green-dark); }
+  .card:nth-child(8n+8) .card-front{ --brick-color: var(--lego-yellow); --brick-color-dark: var(--lego-yellow-dark); }
 
   .card-back{
-    background: var(--cream-light);
+    background: var(--paper);
     transform: rotateY(180deg);
-    border: 2px solid var(--gold);
+    border: 3px solid var(--ink);
     padding: 6px;
+    box-shadow: inset 0 0 0 4px var(--white);
   }
   .card.matched .card-back{
-    background: #eaf3ec;
-    border-color: var(--jade);
+    background: #e2f7ea;
+    border-color: var(--lego-green);
+    box-shadow: inset 0 0 0 4px #f2fbf6;
   }
   .emoji{ font-size: clamp(2rem, 44cqw, 3.6rem); }
   .item-photo{
@@ -456,14 +483,14 @@
     transform: scale(1.35);
   }
   .text-content{ line-height: 1.3; text-align: center; }
-  .trad, .simp{ font-family:'Noto Serif TC', serif; font-weight: 700; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
-  .pinyin{ color: var(--brick); font-size: clamp(0.7rem, 13cqw, 1.1rem); margin-top: 4px; }
+  .trad, .simp{ font-family:'Baloo 2', 'Noto Serif TC', serif; font-weight: 800; color: var(--ink); font-size: clamp(1.05rem, 23cqw, 2rem); }
+  .pinyin{ color: var(--lego-red); font-weight: 700; font-size: clamp(0.7rem, 13cqw, 1.1rem); margin-top: 4px; }
   .pinyin.hidden-pinyin{ visibility: hidden; }
 
   /* ================= 分數 / 排行榜 ================= */
   .modal-overlay{
     position: fixed; inset: 0;
-    background: rgba(43,36,32,0.55);
+    background: rgba(20,20,25,0.6);
     display:none;
     align-items:center; justify-content:center;
     padding: 20px;
@@ -471,26 +498,33 @@
   }
   .modal-overlay.show{ display:flex; }
   .modal-box{
-    background: var(--cream-light);
-    border: 2px solid var(--gold);
-    border-radius: 16px;
+    background: var(--paper);
+    border: 4px solid var(--ink);
+    border-radius: 18px;
     max-width: 420px;
     width: 100%;
     padding: 30px 26px;
-    box-shadow: 0 14px 34px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 0 var(--ink), 0 18px 34px rgba(0,0,0,0.3);
   }
-  .modal-box h2{ color: var(--brick); font-size: 1.3rem; margin-bottom: 6px; }
+  .modal-box h2{ color: var(--lego-red); font-size: 1.3rem; margin-bottom: 6px; }
   .score-big{
-    font-family:'Noto Serif TC', serif;
-    font-size: 2.6rem;
-    color: var(--brick);
-    margin: 10px 0 2px;
+    font-family:'Baloo 2', 'Noto Serif TC', serif;
+    font-size: 2.8rem;
+    color: var(--ink);
+    background: var(--lego-yellow);
+    border: 3px solid var(--ink);
+    border-radius: 14px;
+    display: inline-block;
+    padding: 4px 22px;
+    margin: 12px 0 6px;
     font-weight: 900;
+    box-shadow: 0 5px 0 var(--lego-yellow-dark);
   }
   .score-detail{
     font-size: 0.85rem;
-    color: #6b5a48;
-    margin-bottom: 18px;
+    font-weight: 600;
+    color: #5a5a5a;
+    margin: 12px 0 18px;
   }
   .leaderboard-list{
     list-style: none;
@@ -504,7 +538,7 @@
     flex-direction: column;
     gap: 3px;
     padding: 9px 10px;
-    border-bottom: 1px dashed #d9c9a8;
+    border-bottom: 2px dashed #cfd3d9;
     font-size: 0.92rem;
   }
   .leaderboard-list li .row-top{
@@ -514,21 +548,21 @@
   }
   .leaderboard-list li .row-meta{
     font-size: 0.74rem;
-    color: #8a7a68;
+    color: #8a8a8a;
     padding-left: 32px;
   }
   .leaderboard-list li .rank{
-    font-family:'Noto Serif TC', serif;
+    font-family:'Baloo 2', 'Noto Serif TC', serif;
     font-weight:900;
-    color: var(--brick);
+    color: var(--lego-red);
     width: 22px;
   }
-  .leaderboard-list li .lname{ flex:1; font-weight:600; }
-  .leaderboard-list li .lscore{ color: var(--jade); font-weight:700; }
+  .leaderboard-list li .lname{ flex:1; font-weight:700; }
+  .leaderboard-list li .lscore{ color: var(--lego-green-dark); font-weight:800; }
   .modal-btn-row{
     display:flex; gap:10px; justify-content:center; margin-top: 20px; flex-wrap: wrap;
   }
-  .loading-text{ font-size: 0.85rem; color:#8a7a68; padding: 10px 0; }
+  .loading-text{ font-size: 0.85rem; font-weight: 600; color:#8a8a8a; padding: 10px 0; }
 
   /* ================= 跑馬燈提示 ================= */
   .marquee-banner{
@@ -540,22 +574,27 @@
     z-index: 40;
     pointer-events: none;
     overflow: hidden;
-    /* 背景不透明度：數字介於 0（完全透明）～ 1（完全不透明）之間，數字越大背景越實心 */
-    background: rgba(43,36,32,0.94);
-    border-top: 2px solid var(--gold-light);
-    border-bottom: 2px solid var(--gold-light);
-    padding: 12px 0;
+    background:
+      repeating-linear-gradient(135deg, var(--lego-yellow) 0 22px, var(--ink) 22px 26px);
+    border-top: 4px solid var(--ink);
+    border-bottom: 4px solid var(--ink);
+    padding: 14px 0;
     display: none;
   }
   .marquee-banner.show{ display: block; }
   .marquee-banner .marquee-text{
     display: inline-block;
     white-space: nowrap;
-    font-family: 'Noto Serif TC', serif;
+    font-family: 'Baloo 2', 'Noto Serif TC', serif;
     font-size: clamp(1.3rem, 4vw, 2rem);
     font-weight: 900;
-    color: var(--gold-light);
-    padding-left: 100%;
+    color: var(--white);
+    -webkit-text-stroke: 1.5px var(--ink);
+    padding: 4px 24px;
+    background: var(--lego-red);
+    border: 3px solid var(--ink);
+    border-radius: 10px;
+    margin-left: 100%;
     animation: marquee-scroll 7s linear 1;
   }
   @keyframes marquee-scroll{
@@ -571,7 +610,7 @@
 </div>
 
 <div class="title-banner">
-  <h1>Memoria del Tesoro</h1>
+  <h1>Memorama</h1>
 </div>
 <div class="subtitle">Empareja objetos cotidianos en chino · Un minuto de chino al día</div>
 
