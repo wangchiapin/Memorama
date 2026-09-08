@@ -17,6 +17,7 @@
 
 <!-- ============ Firebase (Compat SDK，方便單檔部署) ============ -->
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -706,11 +707,26 @@ const firebaseConfig = {
 };
 
 let db = null;
-try{
-  firebase.initializeApp(firebaseConfig);
-  db = firebase.firestore(); // 注意：這裡使用 Firestore，不是 Realtime Database
-}catch(e){
-  console.warn('Firebase 尚未設定，排行榜功能將無法使用', e);
+try {
+  if (firebaseConfig.apiKey !== "YOUR_API_KEY" && window.firebase) {
+    firebase.initializeApp(firebaseConfig);
+    
+    // ↓↓↓ 這兩行被你不小心刪掉了，必須加回來 ↓↓↓
+    db = firebase.firestore();
+    firebaseReady = true;
+    // ↑↑↑ 補回結束 ↑↑↑
+
+    // 下面是你原本新增的匿名登入，保持這樣即可
+    firebase.auth().signInAnonymously()
+      .then(() => {
+        console.log("匿名登入成功！");
+      })
+      .catch((error) => {
+        console.error("匿名登入失敗:", error);
+      });
+  }
+} catch(e) { 
+  console.warn('Firebase no configurado:', e); 
 }
 const LEADERBOARD_COLLECTION = 'memory_game_leaderboard';
 
