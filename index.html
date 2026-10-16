@@ -491,6 +491,178 @@
     12%, 82%{ opacity: 1; transform: translateY(0); }
     100%{ opacity: 0; transform: translateY(-4px); }
   }
+
+  /* ================= 遊戲模式選擇 ================= */
+  :root{
+    --p0: #A88B67;          /* 玩家 1：駝色 */
+    --p0-soft: #EFE6D8;
+    --p1: #6F8796;          /* 玩家 2：灰藍 */
+    --p1-soft: #E3E9EC;
+  }
+  .mode-group{ margin: 0 0 18px; }
+  .mode-list{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:2px; background: var(--paper); }
+  .mode-btn{
+    font-family: inherit;
+    text-align: left;
+    background: transparent;
+    border: 0;
+    border-top: 1px solid var(--line-soft);
+    padding: 10px 12px;
+    cursor: pointer;
+    color: var(--ink);
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .mode-btn:first-child{ border-top: 0; }
+  .mode-btn .dot{
+    width: 14px; height: 14px; border-radius: 50%;
+    border: 1px solid var(--line);
+    flex-shrink: 0;
+    background: var(--paper);
+  }
+  .mode-btn.active{ background: var(--accent-soft); }
+  .mode-btn.active .dot{ border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--paper); background: var(--accent); }
+  .mode-btn .mt{ display:block; font-size: 0.88rem; font-weight: 500; }
+  .mode-btn .md{ display:block; font-size: 0.72rem; color: var(--sub); margin-top: 2px; }
+
+  .name-input{
+    width: 100%;
+    padding: 11px 14px;
+    font-size: 1rem;
+    font-family: inherit;
+    border: 0;
+    border-bottom: 1px solid var(--ink);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ink);
+    outline: none;
+    text-align: center;
+  }
+  .name-input::placeholder{ color: #B5AEA2; }
+  .name-input:focus{ border-bottom-color: var(--accent); }
+  #player2-name{ margin-top: 10px; display:none; }
+  body.mode-local #player2-name{ display:block; }
+  #player-name.p0-line{ border-bottom-color: var(--p0); }
+  #player2-name{ border-bottom-color: var(--p1); }
+
+  #online-box{ display:none; margin-top: 18px; }
+  body.mode-online #online-box{ display:block; }
+  body.mode-online #confirm-name-btn{ display:none; }
+  #online-box .btn{ width: 100%; }
+  .or-line{ font-size: 0.72rem; color: var(--sub); letter-spacing: .1em; margin: 16px 0 10px; }
+  .join-row{ display:flex; gap: 8px; }
+  .join-row input{
+    flex: 1;
+    min-width: 0;
+    font-family: inherit;
+    font-size: 1.1rem;
+    letter-spacing: .4em;
+    text-align: center;
+    padding: 9px 6px;
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    background: #fff;
+    color: var(--ink);
+    outline: none;
+  }
+  .join-row input:focus{ border-color: var(--accent); }
+  .join-row .btn{ width: auto !important; padding: 10px 18px; }
+
+  /* ================= 連線等待畫面 ================= */
+  #lobby-screen{
+    display: none;
+    max-width: 420px;
+    margin: 10px auto 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    padding: 30px 28px 28px;
+  }
+  #lobby-screen h2{ font-size: 0.9rem; color: var(--sub); letter-spacing: .14em; }
+  .room-code{
+    font-size: 3rem;
+    font-weight: 300;
+    letter-spacing: .3em;
+    padding-left: .3em;
+    margin: 6px 0 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .lobby-mode{ font-size: 0.82rem; color: var(--accent-text); letter-spacing: .1em; }
+  .lobby-hint{ font-size: 0.78rem; color: var(--sub); line-height: 1.7; margin: 14px 0; }
+  #copy-link-btn{ width: 100%; }
+  .copy-status{ font-size: 0.74rem; color: var(--accent-text); min-height: 1.2em; margin-top: 6px; }
+  .lobby-players{ list-style: none; padding: 0; margin: 16px 0; text-align: left; border-top: 1px solid var(--line-soft); }
+  .lobby-players li{ padding: 10px 4px; border-bottom: 1px solid var(--line-soft); font-size: 0.9rem; display:flex; align-items:center; gap: 10px; }
+  .lobby-players li .swatch{ width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .lobby-players li .tag{ font-size: 0.7rem; color: var(--sub); margin-left: auto; }
+  .lobby-players li.empty{ color: #B5AEA2; }
+  .lobby-status{ font-size: 0.8rem; color: var(--sub); min-height: 1.3em; margin-bottom: 12px; }
+  #lobby-screen .btn{ width: 100%; margin-top: 8px; }
+  #lobby-start-btn:disabled{ opacity: .35; cursor: not-allowed; }
+
+  /* ================= 對戰列（遊戲中） ================= */
+  .mp-bar{ display:none; width: 100%; max-width: 680px; margin: 0 auto 10px; align-items: stretch; gap: 8px; }
+  body.mp .mp-bar{ display:flex; }
+  .pchip{
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 10px;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    transition: background .25s, border-color .25s;
+  }
+  .pchip .swatch{ width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+  .pchip.p0 .swatch{ background: var(--p0); }
+  .pchip.p1 .swatch{ background: var(--p1); }
+  .pchip .pname{ flex: 1; min-width: 0; text-align: left; font-size: 0.86rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .pchip .pscore{ font-size: 1.1rem; font-weight: 500; font-variant-numeric: tabular-nums; }
+  .pchip.offline{ opacity: .45; }
+  .pchip.active.p0{ border-color: var(--p0); background: var(--p0-soft); }
+  .pchip.active.p1{ border-color: var(--p1); background: var(--p1-soft); }
+  .pchip.bump{ animation: bump .5s ease; }
+  @keyframes bump{ 0%{ transform: scale(1); } 40%{ transform: scale(1.05); } 100%{ transform: scale(1); } }
+  body.coop .pchip .pscore{ display:none; }
+  .mp-turn{
+    width: 100%; max-width: 680px; margin: -2px auto 10px;
+    font-size: 0.84rem; letter-spacing: .06em; color: var(--sub); min-height: 1.3em; display:none;
+  }
+  body.mp .mp-turn{ display:block; }
+  .mp-turn.mine{ color: var(--ink); font-weight: 500; }
+  .mp-notice{
+    display:none; width: 100%; max-width: 680px; margin: 0 auto 10px;
+    font-size: 0.78rem; color: var(--accent-text); background: var(--accent-soft); padding: 6px 10px; border-radius: 2px;
+  }
+  .mp-notice.show{ display:block; }
+
+  /* 配對成功的牌：對戰時用配到的人的顏色 */
+  body.versus .card.own0 .card-back{ border: 2px solid var(--p0); opacity: .7; }
+  body.versus .card.own1 .card-back{ border: 2px solid var(--p1); opacity: .7; }
+  body.versus .card.matched .card-back{ transition: opacity .6s .3s; }
+  body.wait-turn .card{ cursor: default; }
+  body.wait-turn .card:hover .card-front{ background-color: var(--card-back); }
+
+  #leave-btn{ display:none; }
+  body.mp #leave-btn{ display:block; }
+  body.online #start-btn{ display:none; }
+  body.mp #view-leaderboard-btn{ display:none; }
+  body.mp .player-chip{ display:none; }
+
+  .vs-score{ font-size: 2.6rem; font-weight: 300; margin: 14px 0 4px; font-variant-numeric: tabular-nums; }
+  .vs-score .s0{ color: var(--p0); }
+  .vs-score .s1{ color: var(--p1); }
+  .vs-names{ font-size: 0.8rem; color: var(--sub); }
+
+  @media (max-width: 1150px){
+    body.mp .game-board{ max-width: min(700px, calc(100dvh - 215px)); }
+    .mp-bar{ margin-bottom: 6px; }
+    .pchip{ padding: 5px 8px; }
+    .mp-turn{ margin-bottom: 6px; font-size: 0.8rem; }
+  }
 </style>
 </head>
 <body>
@@ -502,20 +674,53 @@
 <div class="title-banner"><h1>Memorama</h1></div>
 <div class="subtitle" data-i18n="subtitle"></div>
 
-<!-- ================= 姓名輸入畫面 ================= -->
+<!-- ================= 開始畫面 ================= -->
 <div id="name-screen">
   <h2 data-i18n="nameTitle"></h2>
   <p class="desc" data-i18n="nameDesc"></p>
   <div class="settings-block" data-settings></div>
-  <input type="text" id="player-name" maxlength="14" autocomplete="nickname">
+  <div class="setting-group mode-group">
+    <div class="setting-label" data-i18n="modeLabel"></div>
+    <div class="mode-list" id="mode-list"></div>
+  </div>
+  <input type="text" id="player-name" class="name-input" maxlength="14" autocomplete="nickname">
+  <input type="text" id="player2-name" class="name-input" maxlength="14" autocomplete="off">
+  <div id="online-box">
+    <button class="btn" id="create-room-btn" data-i18n="createRoom"></button>
+    <div class="or-line" data-i18n="orJoin"></div>
+    <div class="join-row">
+      <input type="text" id="room-code-input" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="0000">
+      <button class="btn ghost" id="join-room-btn" data-i18n="join"></button>
+    </div>
+  </div>
   <div id="name-error"></div>
   <button class="btn" id="confirm-name-btn" data-i18n="enter"></button>
+</div>
+
+<!-- ================= 連線等待畫面 ================= -->
+<div id="lobby-screen">
+  <h2 data-i18n="roomTitle"></h2>
+  <div class="room-code" id="lobby-code"></div>
+  <div class="lobby-mode" id="lobby-mode"></div>
+  <div class="lobby-hint" data-i18n="shareHint"></div>
+  <button class="btn ghost" id="copy-link-btn" data-i18n="copyLink"></button>
+  <div class="copy-status" id="copy-status"></div>
+  <ul class="lobby-players" id="lobby-players"></ul>
+  <div class="lobby-status" id="lobby-status"></div>
+  <button class="btn" id="lobby-start-btn" data-i18n="startGame"></button>
+  <button class="btn ghost" id="lobby-leave-btn" data-i18n="leave"></button>
 </div>
 
 <!-- ================= 遊戲畫面 ================= -->
 <div id="game-screen">
   <div class="game-layout">
     <div class="board-col">
+      <div class="mp-bar" id="mp-bar">
+        <div class="pchip p0" id="pchip0"><span class="swatch"></span><span class="pname"></span><span class="pscore">0</span></div>
+        <div class="pchip p1" id="pchip1"><span class="swatch"></span><span class="pname"></span><span class="pscore">0</span></div>
+      </div>
+      <div class="mp-turn" id="mp-turn"></div>
+      <div class="mp-notice" id="mp-notice"></div>
       <div class="game-board" id="game-board"></div>
       <div class="last-flip" id="last-flip"></div>
     </div>
@@ -533,6 +738,7 @@
       <div class="bar-buttons">
         <button class="btn" id="start-btn" data-i18n="restart"></button>
         <button class="btn ghost" id="view-leaderboard-btn" data-i18n="ranking"></button>
+        <button class="btn ghost" id="leave-btn" data-i18n="leave"></button>
         <button class="btn ghost" id="settings-toggle-btn" data-i18n="settings"></button>
       </div>
       <div class="sidebar-divider"></div>
@@ -546,16 +752,18 @@
   </div>
 </div>
 
-<!-- ================= 完成分數 Modal ================= -->
+<!-- ================= 完成 Modal ================= -->
 <div class="modal-overlay" id="score-modal">
   <div class="modal-box">
-    <h2 data-i18n="congrats"></h2>
+    <h2 id="end-title"></h2>
     <div class="score-big" id="final-score">0</div>
+    <div class="vs-score" id="vs-score"><span class="s0"></span> : <span class="s1"></span></div>
+    <div class="vs-names" id="vs-names"></div>
     <div class="score-detail" id="score-breakdown"></div>
     <div id="save-status" class="loading-text"></div>
     <div class="modal-btn-row">
       <button class="btn ghost" id="play-again-btn" data-i18n="playAgain"></button>
-      <button class="btn" id="show-leaderboard-from-score-btn" data-i18n="viewRanking"></button>
+      <button class="btn" id="show-leaderboard-from-score-btn"></button>
     </div>
   </div>
 </div>
@@ -586,15 +794,17 @@ const firebaseConfig = {
   measurementId: "G-RS1DJ7DH50"
 };
 const LEADERBOARD_COLLECTION = 'memory_game_leaderboard';
+const ROOMS_COLLECTION = 'memorama_rooms';
 
 let db = null;
+let myUid = null;
 let authReady = Promise.resolve(false);
 try {
   if (window.firebase){
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
     authReady = firebase.auth().signInAnonymously()
-      .then(() => true)
+      .then(c => { myUid = c.user.uid; return true; })
       .catch(err => { console.error('Anonymous sign-in failed:', err); return false; });
   }
 } catch(e){
@@ -671,10 +881,35 @@ const UI = {
     pageTitle: 'Memorama: Empareja objetos cotidianos en chino',
     subtitle: 'Empareja objetos cotidianos en chino · Un minuto de chino al día',
     nameTitle: 'Comienza tu aventura de memoria',
-    nameDesc: 'Escribe tu nombre para entrar al ranking y demostrar tu mejor memoria.',
+    nameDesc: 'Elige cómo quieres jugar y escribe tu nombre.',
     namePh: 'Escribe tu nombre',
+    name1Ph: 'Jugador 1', name2Ph: 'Jugador 2',
     nameErr: '¡Escribe tu nombre para poder empezar!',
+    names2Err: 'Escribe el nombre de los dos jugadores.',
     enter: 'Entrar al juego',
+    modeLabel: 'Modo de juego',
+    modeSolo: 'Un jugador', modeSoloD: 'Juega solo y entra al ranking',
+    modeLocal: 'Dos jugadores · mismo dispositivo', modeLocalD: 'Por turnos en esta pantalla',
+    modeOvs: 'En línea · competir', modeOvsD: 'Dos dispositivos, por turnos',
+    modeOcoop: 'En línea · cooperar', modeOcoopD: 'Dos dispositivos, juntos contra el reloj',
+    createRoom: 'Crear sala', orJoin: 'o únete a una sala con su código', join: 'Unirse',
+    codeErr: 'Escribe el código de 4 números.',
+    roomNotFound: 'No existe esa sala o ya terminó.',
+    roomFull: 'La sala ya está llena.',
+    netErr: 'No se pudo conectar. Revisa tu conexión e inténtalo de nuevo.',
+    roomClosed: 'La sala se cerró.',
+    roomTitle: 'SALA', shareHint: 'Comparte el código o el enlace con tu compañero.',
+    copyLink: 'Copiar enlace', copied: '¡Enlace copiado!', copyFail: 'Copia este enlace:',
+    host: 'anfitrión', you: 'tú', waitingPlayer: 'Esperando a otro jugador…',
+    startGame: 'Empezar', leave: 'Salir',
+    readyHost: '¡Ya están los dos! Pulsa «Empezar».',
+    waitHostStart: n => `Esperando a que ${n} empiece…`,
+    lobbyModeVs: 'Competir · por turnos', lobbyModeCoop: 'Cooperar · juntos',
+    partnerLeft: n => `${n} salió de la sala.`,
+    turnOf: n => `Turno de ${n}`, yourTurn: '¡Tu turno!',
+    coopFree: 'Cualquiera puede voltear una carta',
+    coopHolding: n => `${n} está eligiendo…`, coopMine: 'Elige la segunda carta',
+    offline: n => `${n} se desconectó. Esperando a que vuelva…`,
     setScript: 'Caracteres', setLang: 'Idioma', setPhon: 'Pronunciación',
     phonNone: 'Nada', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
     player: 'Jugador', time: 'Tiempo', sec: 'seg', moves: 'Intentos', pairs: 'Parejas',
@@ -684,11 +919,13 @@ const UI = {
     flipImg: 'Imagen', flipText: 'Texto', match: '¡Pareja encontrada!',
     marquee1: '¡Ánimo, tú puedes!', marquee2: '¿Todavía no lo recuerdas?',
     congrats: '¡Felicidades, completaste el juego!',
+    winner: n => `¡Gana ${n}!`, tie: '¡Empate!', coopDone: '¡Lo lograron juntos!',
     breakdown: (t, m) => `Tiempo: ${t} seg · Intentos: ${m}`,
     saving: 'Guardando tu puntaje en el ranking...',
     saved: '¡Tu puntaje se guardó en el ranking!',
     queued: 'No hay conexión con el ranking. Guardaremos tu puntaje automáticamente más tarde.',
-    playAgain: 'Jugar de nuevo', viewRanking: 'Ver ranking', close: 'Cerrar',
+    playAgain: 'Jugar de nuevo', rematch: 'Otra partida', waitHost: 'Esperando al anfitrión…',
+    viewRanking: 'Ver ranking', close: 'Cerrar',
     loading: 'Cargando...', lbEmpty: '¡Todavía nadie está en el ranking. Sé el primero!',
     lbFail: 'No se pudo cargar el ranking', tries: 'intentos',
     noVoice: 'Tu dispositivo no tiene voz en chino, por eso no se escucha la pronunciación. Puedes instalar una voz de chino (Taiwán) en los ajustes de idioma o de voz de tu sistema.'
@@ -697,10 +934,35 @@ const UI = {
     pageTitle: 'Memorama: Match everyday objects in Chinese',
     subtitle: 'Match everyday objects in Chinese · One minute of Chinese a day',
     nameTitle: 'Start your memory adventure',
-    nameDesc: 'Enter your name to join the ranking and show off your memory.',
+    nameDesc: 'Choose how you want to play and enter your name.',
     namePh: 'Your name',
+    name1Ph: 'Player 1', name2Ph: 'Player 2',
     nameErr: 'Please enter your name to start!',
+    names2Err: 'Enter both players’ names.',
     enter: 'Start playing',
+    modeLabel: 'Game mode',
+    modeSolo: 'One player', modeSoloD: 'Play alone and join the ranking',
+    modeLocal: 'Two players · same device', modeLocalD: 'Take turns on this screen',
+    modeOvs: 'Online · compete', modeOvsD: 'Two devices, taking turns',
+    modeOcoop: 'Online · cooperate', modeOcoopD: 'Two devices, together against the clock',
+    createRoom: 'Create room', orJoin: 'or join a room with its code', join: 'Join',
+    codeErr: 'Enter the 4-digit code.',
+    roomNotFound: 'That room does not exist or has ended.',
+    roomFull: 'The room is already full.',
+    netErr: 'Could not connect. Check your connection and try again.',
+    roomClosed: 'The room was closed.',
+    roomTitle: 'ROOM', shareHint: 'Share the code or the link with your partner.',
+    copyLink: 'Copy link', copied: 'Link copied!', copyFail: 'Copy this link:',
+    host: 'host', you: 'you', waitingPlayer: 'Waiting for another player…',
+    startGame: 'Start', leave: 'Leave',
+    readyHost: 'You are both here! Press “Start”.',
+    waitHostStart: n => `Waiting for ${n} to start…`,
+    lobbyModeVs: 'Compete · take turns', lobbyModeCoop: 'Cooperate · together',
+    partnerLeft: n => `${n} left the room.`,
+    turnOf: n => `${n}’s turn`, yourTurn: 'Your turn!',
+    coopFree: 'Anyone can flip a card',
+    coopHolding: n => `${n} is choosing…`, coopMine: 'Pick the second card',
+    offline: n => `${n} disconnected. Waiting for them to come back…`,
     setScript: 'Characters', setLang: 'Language', setPhon: 'Pronunciation',
     phonNone: 'None', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
     player: 'Player', time: 'Time', sec: 's', moves: 'Moves', pairs: 'Pairs',
@@ -710,11 +972,13 @@ const UI = {
     flipImg: 'Picture', flipText: 'Word', match: 'Pair found!',
     marquee1: 'Keep going, you can do it!', marquee2: "Still can't remember?",
     congrats: 'Congratulations, you finished!',
+    winner: n => `${n} wins!`, tie: 'It’s a tie!', coopDone: 'You did it together!',
     breakdown: (t, m) => `Time: ${t} s · Moves: ${m}`,
     saving: 'Saving your score to the ranking...',
     saved: 'Your score was saved to the ranking!',
     queued: "Can't reach the ranking right now. Your score will be saved automatically later.",
-    playAgain: 'Play again', viewRanking: 'View ranking', close: 'Close',
+    playAgain: 'Play again', rematch: 'Another game', waitHost: 'Waiting for the host…',
+    viewRanking: 'View ranking', close: 'Close',
     loading: 'Loading...', lbEmpty: 'No one is in the ranking yet. Be the first!',
     lbFail: 'Could not load the ranking', tries: 'moves',
     noVoice: "Your device has no Chinese voice, so you won't hear the pronunciation. You can install a Chinese (Taiwan) voice in your system's language or speech settings."
@@ -723,7 +987,7 @@ const UI = {
 
 /* =========================================================
    設定：字體 script（simp/trad）、語言 lang（es/en）、發音標示 phon（none/pinyin/zhuyin）
-   記在玩家自己的瀏覽器裡，下次打開不用重選
+   記在玩家自己的瀏覽器裡（連線時每個人用自己的設定）
    ========================================================= */
 const SETTINGS_KEY = 'memorama_settings';
 const settings = { script: 'simp', lang: 'es', phon: 'none' };
@@ -784,6 +1048,47 @@ function changeSetting(key, value){
   applyAll();
 }
 
+/* =========================================================
+   遊戲模式：solo 單人／local 同一台兩人／ovs 連線對戰／ocoop 連線一起玩
+   ========================================================= */
+const MODES = [
+  ['solo', 'modeSolo', 'modeSoloD'],
+  ['local', 'modeLocal', 'modeLocalD'],
+  ['ovs', 'modeOvs', 'modeOvsD'],
+  ['ocoop', 'modeOcoop', 'modeOcoopD']
+];
+let selectedMode = 'solo';
+try {
+  const m = localStorage.getItem('memorama_mode');
+  if (MODES.some(x => x[0] === m)) selectedMode = m;
+} catch(e){}
+
+function renderModes(){
+  const list = $('mode-list');
+  list.innerHTML = '';
+  MODES.forEach(([id, title, desc]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'mode-btn' + (selectedMode === id ? ' active' : '');
+    b.innerHTML = '<span class="dot"></span><span><span class="mt"></span><span class="md"></span></span>';
+    b.querySelector('.mt').textContent = t(title);
+    b.querySelector('.md').textContent = t(desc);
+    b.addEventListener('click', () => selectMode(id));
+    list.appendChild(b);
+  });
+  document.body.classList.toggle('mode-local', selectedMode === 'local');
+  document.body.classList.toggle('mode-online', selectedMode === 'ovs' || selectedMode === 'ocoop');
+  playerNameInput.placeholder = selectedMode === 'local' ? t('name1Ph') : t('namePh');
+  playerNameInput.classList.toggle('p0-line', selectedMode === 'local');
+  $('player2-name').placeholder = t('name2Ph');
+}
+function selectMode(id){
+  selectedMode = id;
+  try { localStorage.setItem('memorama_mode', id); } catch(e){}
+  nameError.textContent = '';
+  renderModes();
+}
+
 /* 把目前設定套用到整個畫面（立刻生效） */
 function applyAll(){
   document.documentElement.lang = settings.lang;
@@ -792,37 +1097,43 @@ function applyAll(){
     const val = t(el.dataset.i18n);
     if (typeof val === 'string') el.textContent = val;
   });
-  playerNameInput.placeholder = t('namePh');
-  if (nameError.textContent) nameError.textContent = t('nameErr');
+  if (nameErrorKey) nameError.textContent = t(nameErrorKey);
+  renderModes();
   renderSettings();
   refreshCardTexts();
   renderLog();
+  if (MP.kind) mpRenderBars();
+  if (MP.kind === 'online' && MP.room) renderLobby(MP.room);
   if (scoreModal.classList.contains('show')) renderScoreModal();
   if (leaderboardModal.classList.contains('show')) loadLeaderboard();
 }
 
 /* =========================================================
-   遊戲狀態
+   共用狀態
    ========================================================= */
 const PAIR_COUNT = 18;
 const FLIP_DURATION = 500;        // 與 CSS .card-inner 的翻轉時間一致
-const MISMATCH_VIEW_TIME = 1100;  // 配錯時，翻開後再停留的時間（玩家也可以直接點下一張）
+const MISMATCH_VIEW_TIME = 1100;  // 單人：配錯時翻開後再停留的時間（可以直接點下一張）
+const MP_MISMATCH_VIEW = 1500;    // 兩人：配錯固定停 1.5 秒讓兩人都看清楚，再換人
 
+let gameMode = 'solo';            // 目前這一局的模式
 let playerName = '';
 let gameId = 0;                   // 每局一個編號，上一局留下的延遲動作一律忽略
 let flippedCards = [];
-let pendingMismatch = null;       // { a, b, timeoutId }
+let pendingMismatch = null;
 let matchedPairs = 0;
 let moves = 0;
 let timer = 0;
 let timerInterval = null;
 let isPlaying = false;
 let marqueeStage = 0;
-let logEntries = [];              // { kind: 'flip'|'match', id, cardType }
-let lastResult = null;            // 最近一局的結果（給分數視窗切換語言用）
+let logEntries = [];              // { kind: 'flip'|'match', id, cardType, by }
+let lastResult = null;
+let nameErrorKey = '';
 
 const $ = id => document.getElementById(id);
 const nameScreen = $('name-screen');
+const lobbyScreen = $('lobby-screen');
 const gameScreen = $('game-screen');
 const playerNameInput = $('player-name');
 const nameError = $('name-error');
@@ -840,6 +1151,18 @@ const logCol = $('log-col');
 
 $('pairs-total').textContent = PAIR_COUNT;
 
+function showScreen(which){
+  nameScreen.style.display = which === 'name' ? 'block' : 'none';
+  lobbyScreen.style.display = which === 'lobby' ? 'block' : 'none';
+  gameScreen.style.display = which === 'game' ? 'block' : 'none';
+  document.body.classList.toggle('in-game', which === 'game');
+}
+
+function setNameError(key, extra){
+  nameErrorKey = extra ? '' : key;
+  nameError.textContent = extra ? extra : (key ? t(key) : '');
+}
+
 /* ---------- 圖片：先試 webp，再試 png，都沒有就顯示 emoji ---------- */
 function imageSources(id){ return [`images/images${id}.webp`, `images/images${id}.png`]; }
 
@@ -850,22 +1173,33 @@ function preloadImages(){
   });
 }
 
-/* ---------- 姓名輸入 ---------- */
+/* ---------- 開始畫面 ---------- */
 $('confirm-name-btn').addEventListener('click', submitName);
 playerNameInput.addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
+$('player2-name').addEventListener('keydown', e => { if (e.key === 'Enter') submitName(); });
+
+function readName(input){
+  return input.value.trim().slice(0, 14);
+}
+function rememberName(n){ try { localStorage.setItem('memorama_name', n); } catch(e){} }
 
 function submitName(){
-  const val = playerNameInput.value.trim();
-  if (!val){
-    nameError.textContent = t('nameErr');
+  const n1 = readName(playerNameInput);
+  if (selectedMode === 'local'){
+    const n2 = readName($('player2-name'));
+    if (!n1 || !n2){ setNameError('names2Err'); return; }
+    setNameError('');
+    startLocalGame([n1, n2]);
     return;
   }
-  playerName = val.slice(0, 14);
+  if (!n1){ setNameError('nameErr'); return; }
+  rememberName(n1);
+  playerName = n1;
   $('player-name-display').textContent = playerName;
-  nameError.textContent = '';
-  nameScreen.style.display = 'none';
-  gameScreen.style.display = 'block';
-  document.body.classList.add('in-game');
+  setNameError('');
+  gameMode = 'solo';
+  setBodyMode();
+  showScreen('game');
   startGame();
 }
 
@@ -877,17 +1211,16 @@ $('log-title').addEventListener('click', () => logCol.classList.toggle('open'));
 function logLine(entry){
   const item = vocabById[entry.id];
   const p = phonetic(item);
-  const zh = `<span class="zh"></span>`;
   const li = document.createElement('li');
+  const who = (entry.by != null && MP.names[entry.by]) ? `${MP.names[entry.by]} · ` : '';
   if (entry.kind === 'match'){
     li.classList.add('log-success');
-    li.innerHTML = `${escapeHtml(t('match'))} ${zh}`;
-    li.querySelector('.zh').textContent = hanzi(item) + (p ? ` · ${p}` : '');
+    li.innerHTML = `${escapeHtml(who + t('match'))} <span class="zh"></span>`;
   } else {
     const type = entry.cardType === 'img' ? t('flipImg') : t('flipText');
-    li.innerHTML = `${escapeHtml(type)}: ${zh} · ${escapeHtml(meaning(item))}`;
-    li.querySelector('.zh').textContent = hanzi(item) + (p ? ` · ${p}` : '');
+    li.innerHTML = `${escapeHtml(who + type)}: <span class="zh"></span> · ${escapeHtml(meaning(item))}`;
   }
+  li.querySelector('.zh').textContent = hanzi(item) + (p ? ` · ${p}` : '');
   return li;
 }
 
@@ -902,8 +1235,7 @@ function renderLog(){
     return;
   }
   for (let i = logEntries.length - 1; i >= 0; i--) logList.appendChild(logLine(logEntries[i]));
-  const latest = logLine(logEntries[logEntries.length - 1]);
-  lastFlipEl.innerHTML = latest.innerHTML;
+  lastFlipEl.innerHTML = logLine(logEntries[logEntries.length - 1]).innerHTML;
 }
 
 function addLog(entry){
@@ -915,7 +1247,7 @@ function escapeHtml(s){
   return String(s).replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
 }
 
-/* ---------- 跑馬燈：只跑一次就消失 ---------- */
+/* ---------- 鼓勵提示：只跑一次就消失（單人） ---------- */
 function showMarquee(text){
   marqueeBanner.classList.remove('show');
   void marqueeBanner.offsetWidth;
@@ -929,7 +1261,7 @@ function hideMarquee(){
 marqueeText.addEventListener('animationend', hideMarquee);
 
 function checkMarqueeThresholds(){
-  if (!isPlaying) return;
+  if (!isPlaying || gameMode !== 'solo') return;
   if (marqueeStage < 2 && (timer >= 180 || moves > 120)){
     marqueeStage = 2;
     showMarquee(t('marquee2'));
@@ -947,7 +1279,7 @@ function shuffle(array){
   return array;
 }
 
-/* ---------- 牌上的文字（換字體／發音標示時重畫） ---------- */
+/* ---------- 牌：建立與文字 ---------- */
 function fillTextCard(cardEl){
   const item = vocabById[cardEl.dataset.id];
   const hz = cardEl.querySelector('.hanzi');
@@ -965,42 +1297,16 @@ function refreshCardTexts(){
   board.querySelectorAll('.item-photo').forEach(img => { img.alt = hanzi(vocabById[img.closest('.card').dataset.id]); });
 }
 
-/* ---------- 開始遊戲 ---------- */
-function startGame(){
-  gameId++;
-  clearInterval(timerInterval);
-  if (pendingMismatch) clearTimeout(pendingMismatch.timeoutId);
-  pendingMismatch = null;
-  flippedCards = [];
-  timer = 0;
-  moves = 0;
-  matchedPairs = 0;
-  isPlaying = true;
-  marqueeStage = 0;
-  logEntries = [];
-  lastResult = null;
-  $('timer').textContent = 0;
-  $('moves').textContent = 0;
-  $('pairs-found').textContent = 0;
-  hideMarquee();
-  renderLog();
-  sidebar.classList.remove('open');
-
-  const chosen = shuffle([...vocab]).slice(0, PAIR_COUNT);
-  const cards = [];
-  chosen.forEach(item => {
-    cards.push({ id: item.id, type: 'img' });
-    cards.push({ id: item.id, type: 'text' });
-  });
-  shuffle(cards);
-
+/* cards: [{ id, type: 'img'|'text' }]；onTap(cardEl, index) */
+function buildBoard(cards, onTap){
   board.innerHTML = '';
-  cards.forEach(card => {
+  cards.forEach((card, index) => {
     const item = vocabById[card.id];
     const cardEl = document.createElement('div');
     cardEl.className = 'card';
     cardEl.dataset.id = card.id;
     cardEl.dataset.type = card.type;
+    cardEl.dataset.index = index;
     cardEl.innerHTML = `<div class="card-inner"><div class="card-front"></div><div class="card-back"></div></div>`;
     const back = cardEl.querySelector('.card-back');
 
@@ -1028,9 +1334,61 @@ function startGame(){
       fillTextCard(cardEl);
     }
 
-    cardEl.addEventListener('click', () => flipCard(cardEl));
+    cardEl.addEventListener('click', () => onTap(cardEl, index));
     board.appendChild(cardEl);
   });
+}
+
+function newDeck(){
+  const chosen = shuffle([...vocab]).slice(0, PAIR_COUNT);
+  const cards = [];
+  chosen.forEach(item => {
+    cards.push({ id: item.id, type: 'img' });
+    cards.push({ id: item.id, type: 'text' });
+  });
+  return shuffle(cards);
+}
+function deckToCodes(cards){ return cards.map(c => c.id + (c.type === 'img' ? 'i' : 't')); }
+function codesToDeck(codes){ return codes.map(s => ({ id: parseInt(s, 10), type: s.endsWith('i') ? 'img' : 'text' })); }
+
+function setBodyMode(){
+  const mp = gameMode !== 'solo';
+  document.body.classList.toggle('mp', mp);
+  document.body.classList.toggle('online', gameMode === 'ovs' || gameMode === 'ocoop');
+  document.body.classList.toggle('versus', gameMode === 'local' || gameMode === 'ovs');
+  document.body.classList.toggle('coop', gameMode === 'ocoop');
+  if (!mp) document.body.classList.remove('wait-turn');
+}
+
+function resetCommonUI(){
+  hideMarquee();
+  logEntries = [];
+  lastResult = null;
+  renderLog();
+  sidebar.classList.remove('open');
+  scoreModal.classList.remove('show');
+}
+
+/* =========================================================
+   單人模式
+   ========================================================= */
+function startGame(){
+  gameId++;
+  clearInterval(timerInterval);
+  if (pendingMismatch) clearTimeout(pendingMismatch.timeoutId);
+  pendingMismatch = null;
+  flippedCards = [];
+  timer = 0;
+  moves = 0;
+  matchedPairs = 0;
+  isPlaying = true;
+  marqueeStage = 0;
+  $('timer').textContent = 0;
+  $('moves').textContent = 0;
+  $('pairs-found').textContent = 0;
+  resetCommonUI();
+
+  buildBoard(newDeck(), cardEl => flipCard(cardEl));
 
   const thisGame = gameId;
   timerInterval = setInterval(() => {
@@ -1040,10 +1398,9 @@ function startGame(){
     checkMarqueeThresholds();
   }, 1000);
 
-  trackEvent('game_start', { script: settings.script, lang: settings.lang, phon: settings.phon });
+  trackEvent('game_start', { mode: 'solo', script: settings.script, lang: settings.lang, phon: settings.phon });
 }
 
-/* ---------- 翻牌 ---------- */
 function flipCard(cardEl){
   if (!isPlaying) return;
 
@@ -1105,24 +1462,26 @@ function checkForMatch(){
       setTimeout(() => { if (thisGame === gameId) finishGame(); }, FLIP_DURATION + 500);
     }
   } else {
-    // 配錯：翻面動畫結束後抖一下，停留一段時間再蓋回；期間玩家點下一張會立刻蓋回
-    const shakeId = setTimeout(() => {
+    setTimeout(() => {
       if (thisGame !== gameId) return;
       if (!pendingMismatch || pendingMismatch.a !== cardA) return;
-      [cardA, cardB].forEach(c => {
-        c.classList.remove('shake');
-        void c.offsetWidth;
-        c.classList.add('shake');
-      });
+      shakeCards([cardA, cardB]);
     }, FLIP_DURATION);
     const timeoutId = setTimeout(() => {
       if (thisGame !== gameId) return;
       coverMismatch();
     }, FLIP_DURATION + MISMATCH_VIEW_TIME);
-    pendingMismatch = { a: cardA, b: cardB, timeoutId, shakeId };
+    pendingMismatch = { a: cardA, b: cardB, timeoutId };
   }
 }
 
+function shakeCards(cards){
+  cards.forEach(c => {
+    c.classList.remove('shake');
+    void c.offsetWidth;
+    c.classList.add('shake');
+  });
+}
 board.addEventListener('animationend', e => {
   if (e.animationName === 'shakeCard') e.target.classList.remove('shake');
 });
@@ -1159,7 +1518,6 @@ function checkVoiceAvailable(){
   }
   pickVoice();
   speechSynthesis.addEventListener('voiceschanged', pickVoice);
-  // 有些裝置語音清單會晚一點才載入，等一下再判斷
   setTimeout(() => {
     pickVoice();
     if (!zhVoice && !voiceHintDismissed) $('voice-hint').classList.add('show');
@@ -1177,9 +1535,8 @@ function speakText(text){
 }
 
 /* =========================================================
-   計分
+   計分（單人）
    總分 = 準確度（最多 700）＋ 速度獎勵（最多 300）
-   準確度 = 18 ÷ 實際次數 × 700；速度獎勵 = 300 − 秒數（最少 0）
    ========================================================= */
 function calculateScore(pairs, movesUsed, seconds){
   const accuracyScore = (pairs / movesUsed) * 700;
@@ -1190,12 +1547,12 @@ function calculateScore(pairs, movesUsed, seconds){
 function finishGame(){
   hideMarquee();
   const score = calculateScore(matchedPairs, moves, timer);
-  lastResult = { score, moves, timeSeconds: timer, status: 'saving' };
+  lastResult = { kind: 'solo', score, moves, timeSeconds: timer, status: 'saving' };
   renderScoreModal();
   scoreModal.classList.add('show');
 
   trackEvent('game_complete', {
-    score, moves, time_seconds: timer,
+    mode: 'solo', score, moves, time_seconds: timer,
     script: settings.script, lang: settings.lang, phon: settings.phon
   });
 
@@ -1207,22 +1564,65 @@ function finishGame(){
     script: settings.script,
     lang: settings.lang
   };
+  const thisResult = lastResult;
   saveScore(record).then(ok => {
-    if (!lastResult || lastResult.score !== score) return;
+    if (lastResult !== thisResult) return;
     lastResult.status = ok ? 'saved' : 'queued';
     renderScoreModal();
   });
 }
 
+function fmtTime(sec){
+  sec = Math.max(0, Math.round(sec));
+  return `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
+}
+
 function renderScoreModal(){
   if (!lastResult) return;
-  $('final-score').textContent = lastResult.score;
-  $('score-breakdown').textContent = t('breakdown')(lastResult.timeSeconds, lastResult.moves);
-  $('save-status').textContent = t(lastResult.status);
+  const r = lastResult;
+  const show = (id, on) => { $(id).style.display = on ? '' : 'none'; };
+  const againBtn = $('play-again-btn');
+  const secondBtn = $('show-leaderboard-from-score-btn');
+  againBtn.disabled = false;
+
+  if (r.kind === 'solo'){
+    $('end-title').textContent = t('congrats');
+    show('final-score', true); show('vs-score', false); show('vs-names', false); show('save-status', true);
+    $('final-score').textContent = r.score;
+    $('score-breakdown').textContent = t('breakdown')(r.timeSeconds, r.moves);
+    $('save-status').textContent = t(r.status);
+    againBtn.textContent = t('playAgain');
+    secondBtn.textContent = t('viewRanking');
+    return;
+  }
+
+  show('save-status', false);
+  secondBtn.textContent = t('leave');
+  if (r.kind === 'versus'){
+    const [s0, s1] = r.scores;
+    $('end-title').textContent = s0 === s1 ? t('tie') : t('winner')(s0 > s1 ? r.names[0] : r.names[1]);
+    show('final-score', false); show('vs-score', true); show('vs-names', true);
+    $('vs-score').querySelector('.s0').textContent = s0;
+    $('vs-score').querySelector('.s1').textContent = s1;
+    $('vs-names').textContent = `${r.names[0]} : ${r.names[1]}`;
+  } else {
+    $('end-title').textContent = t('coopDone');
+    show('final-score', true); show('vs-score', false); show('vs-names', true);
+    $('final-score').textContent = fmtTime(r.timeSeconds);
+    $('vs-names').textContent = `${r.names[0]} + ${r.names[1]}`;
+  }
+  $('score-breakdown').textContent = t('breakdown')(r.timeSeconds, r.moves);
+
+  if (r.online && MP.me !== 0){
+    againBtn.textContent = t('waitHost');
+    againBtn.disabled = true;
+  } else {
+    againBtn.textContent = r.online ? t('rematch') : t('playAgain');
+  }
 }
 
 /* =========================================================
-   排行榜存檔：失敗就先存在玩家瀏覽器，之後自動補送
+   排行榜存檔（單人）：失敗就先存在玩家瀏覽器，之後自動補送
    ========================================================= */
 const QUEUE_KEY = 'memorama_pending_scores';
 function readQueue(){
@@ -1339,13 +1739,737 @@ function openLeaderboard(){
   trackEvent('leaderboard_view');
 }
 
-/* ---------- 按鈕 ---------- */
-$('start-btn').addEventListener('click', startGame);
-$('play-again-btn').addEventListener('click', () => {
+/* =========================================================
+   兩人模式（同一台、連線）共用規則
+   狀態 s：deck（牌的代碼）、matched（每張牌被誰配到，-1 = 還沒）、
+           open（目前翻開、還沒配對的牌）、openBy、turn、scores、moves、flipSeq、lastFlip、status
+   ========================================================= */
+const MP = {
+  kind: null,       // 'local' | 'online'
+  type: 'vs',       // 'vs' 對戰 | 'coop' 一起玩
+  s: null,          // 目前狀態
+  me: -1,           // 連線時自己是 0 或 1；同一台時不用
+  names: ['', ''],
+  deckKey: '',      // 目前畫面上的牌組（換局時重建）
+  seenSeq: -1,      // 已處理過的翻牌序號
+  coverSeq: -1,     // 已排定蓋牌的序號
+  prevMatched: [],
+  finishedShown: '',
+  startMs: 0,
+  endMs: 0,
+  timerId: null,
+  room: null, roomRef: null, unsub: null, code: '', heartbeat: null,
+  otherSeenVal: null, otherSeenAt: 0, presenceId: null, otherOffline: false,
+  inGameRound: -1,
+  pending: new Set()  // 自己剛點、還在等伺服器確認的牌
+};
+
+function idOfCode(code){ return parseInt(code, 10); }
+
+function freshGameFields(startTurn){
+  return {
+    deck: deckToCodes(newDeck()),
+    matched: Array(PAIR_COUNT * 2).fill(-1),
+    open: [],
+    openBy: -1,
+    turn: startTurn,
+    scores: [0, 0],
+    moves: 0,
+    lastFlip: null,
+    status: 'playing'
+  };
+}
+
+/* 翻一張牌：合法就回傳新狀態，不合法回傳 null */
+function applyFlip(s, i, who, type){
+  if (s.status !== 'playing') return null;
+  if (s.open.length >= 2) return null;
+  if (i < 0 || i >= s.deck.length) return null;
+  if (s.matched[i] !== -1 || s.open.includes(i)) return null;
+  if (type === 'vs' && s.turn !== who) return null;
+  if (type === 'coop' && s.open.length === 1 && s.openBy !== who) return null;
+
+  const n = {
+    ...s,
+    open: [...s.open, i],
+    matched: [...s.matched],
+    scores: [...s.scores],
+    flipSeq: (s.flipSeq || 0) + 1,
+    lastFlip: { i, by: who }
+  };
+  if (n.open.length === 1) n.openBy = who;
+  if (n.open.length === 2){
+    n.moves = s.moves + 1;
+    const [a, b] = n.open;
+    if (idOfCode(n.deck[a]) === idOfCode(n.deck[b])){
+      n.matched[a] = who;
+      n.matched[b] = who;
+      n.scores[who]++;
+      n.open = [];
+      n.openBy = -1;
+      if (n.matched.every(x => x !== -1)) n.status = 'finished';
+    }
+  }
+  return n;
+}
+
+/* 配錯的兩張蓋回去；對戰時換人 */
+function applyCover(s, seq, type){
+  if ((s.flipSeq || 0) !== seq || s.open.length !== 2) return null;
+  return { ...s, open: [], openBy: -1, turn: type === 'vs' ? 1 - s.turn : s.turn };
+}
+
+/* 依照狀態畫出牌面、玩家列、計時 */
+function mpRender(){
+  const s = MP.s;
+  if (!s || !s.deck || !s.deck.length) return;
+  const key = s.deck.join(',') + '#' + (s.round ?? '');
+  if (MP.deckKey !== key){
+    MP.deckKey = key;
+    buildBoard(codesToDeck(s.deck), (cardEl, index) => mpTap(index));
+    MP.prevMatched = Array(s.deck.length).fill(-1);
+    MP.seenSeq = (s.flipSeq || 0) - (s.lastFlip ? 1 : 0);
+    MP.coverSeq = -1;
+    MP.finishedShown = '';
+    logEntries = [];
+    renderLog();
+    scoreModal.classList.remove('show');
+  }
+
+  const cards = board.querySelectorAll('.card');
+  cards.forEach((el, i) => {
+    const m = s.matched[i];
+    el.classList.toggle('flipped', s.open.includes(i) || (MP.pending.has(i) && m === -1));
+    el.classList.toggle('matched', m !== -1);
+    el.classList.toggle('own0', m === 0);
+    el.classList.toggle('own1', m === 1);
+  });
+
+  // 新翻的牌：念出來、寫進紀錄
+  const seq = s.flipSeq || 0;
+  if (s.lastFlip && seq > MP.seenSeq){
+    MP.seenSeq = seq;
+    const i = s.lastFlip.i;
+    const el = cards[i];
+    if (el){
+      const item = vocabById[el.dataset.id];
+      const mine = MP.kind === 'local' || s.lastFlip.by === MP.me;
+      if (!mine || !MP.spokeLocally) speakText(item.trad);
+      MP.spokeLocally = false;
+      addLog({ kind: 'flip', id: item.id, cardType: el.dataset.type, by: s.lastFlip.by });
+    }
+  }
+
+  // 新配對成功：光圈＋紀錄＋分數跳一下
+  s.matched.forEach((m, i) => {
+    if (m !== -1 && MP.prevMatched[i] === -1){
+      const el = cards[i];
+      setTimeout(() => { if (el.isConnected) triggerGlow(el); }, FLIP_DURATION);
+      const other = s.matched.findIndex((x, j) => j !== i && x !== -1 && MP.prevMatched[j] === -1 && idOfCode(s.deck[j]) === idOfCode(s.deck[i]));
+      if (other > i) {
+        addLog({ kind: 'match', id: idOfCode(s.deck[i]), by: m });
+        bumpChip(m);
+      }
+    }
+  });
+  MP.prevMatched = [...s.matched];
+
+  // 配錯：先抖一下，固定停 1.5 秒再蓋回（並換人）
+  if (s.open.length === 2 && MP.coverSeq !== seq){
+    MP.coverSeq = seq;
+    const pair = [cards[s.open[0]], cards[s.open[1]]];
+    const myGame = gameId;
+    setTimeout(() => { if (myGame === gameId) shakeCards(pair.filter(Boolean)); }, FLIP_DURATION);
+    setTimeout(() => { if (myGame === gameId) mpCover(seq); }, FLIP_DURATION + MP_MISMATCH_VIEW);
+  }
+
+  $('moves').textContent = s.moves;
+  $('pairs-found').textContent = s.matched.filter(x => x !== -1).length / 2;
+  mpRenderBars();
+
+  if (s.status === 'finished' && MP.finishedShown !== key){
+    MP.finishedShown = key;
+    mpStopTimer();
+    const myGame = gameId;
+    setTimeout(() => { if (myGame === gameId) mpShowEnd(); }, FLIP_DURATION + 500);
+  }
+}
+
+function bumpChip(p){
+  const chip = $('pchip' + p);
+  chip.classList.remove('bump');
+  void chip.offsetWidth;
+  chip.classList.add('bump');
+}
+
+function mpRenderBars(){
+  const s = MP.s;
+  if (!s) return;
+  for (let p = 0; p < 2; p++){
+    const chip = $('pchip' + p);
+    let label = MP.names[p] || '…';
+    if (MP.kind === 'online' && p === MP.me) label += ` (${t('you')})`;
+    chip.querySelector('.pname').textContent = label;
+    chip.querySelector('.pscore').textContent = s.scores ? s.scores[p] : 0;
+    chip.classList.toggle('offline', MP.kind === 'online' && p !== MP.me && MP.otherOffline);
+  }
+  const turnEl = $('mp-turn');
+  let text = '', mine = false, active = -1;
+  if (s.status === 'playing'){
+    if (MP.type === 'vs'){
+      active = s.turn;
+      if (MP.kind === 'online' && s.turn === MP.me){ text = t('yourTurn'); mine = true; }
+      else text = t('turnOf')(MP.names[s.turn]);
+    } else {
+      if (s.open.length === 1){
+        active = s.openBy;
+        if (s.openBy === MP.me){ text = t('coopMine'); mine = true; }
+        else text = t('coopHolding')(MP.names[s.openBy]);
+      } else text = t('coopFree');
+    }
+  }
+  if (active !== MP.lastActive && MP.lastActive !== undefined && active !== -1 && MP.type === 'vs') bumpChip(active);
+  MP.lastActive = active;
+  $('pchip0').classList.toggle('active', active === 0);
+  $('pchip1').classList.toggle('active', active === 1);
+  turnEl.textContent = text;
+  turnEl.classList.toggle('mine', mine);
+
+  const waiting = MP.kind === 'online' && s.status === 'playing' &&
+    ((MP.type === 'vs' && s.turn !== MP.me) || (MP.type === 'coop' && s.open.length === 1 && s.openBy !== MP.me) || s.open.length === 2);
+  document.body.classList.toggle('wait-turn', !!waiting);
+
+  const notice = $('mp-notice');
+  const off = MP.kind === 'online' && MP.otherOffline && s.status !== 'finished';
+  notice.textContent = off ? t('offline')(MP.names[1 - MP.me] || '…') : '';
+  notice.classList.toggle('show', !!off);
+}
+
+function mpStartTimer(){
+  mpStopTimer();
+  const myGame = gameId;
+  const tick = () => {
+    if (myGame !== gameId) return;
+    const end = MP.endMs || Date.now();
+    timer = MP.startMs ? Math.max(0, Math.floor((end - MP.startMs) / 1000)) : 0;
+    $('timer').textContent = timer;
+  };
+  tick();
+  MP.timerId = setInterval(tick, 500);
+}
+function mpStopTimer(){
+  clearInterval(MP.timerId);
+  MP.timerId = null;
+  const end = MP.endMs || Date.now();
+  if (MP.startMs) $('timer').textContent = Math.max(0, Math.floor((end - MP.startMs) / 1000));
+}
+
+function mpTap(i){
+  const s = MP.s;
+  if (!s) return;
+  if (MP.kind === 'local'){
+    const n = applyFlip(s, i, s.turn, 'vs');
+    if (!n) return;
+    if (n.status === 'finished') MP.endMs = Date.now();
+    MP.s = n;
+    mpRender();
+  } else {
+    onlineFlip(i);
+  }
+}
+
+function mpCover(seq){
+  if (MP.kind === 'local'){
+    const n = applyCover(MP.s, seq, 'vs');
+    if (!n) return;
+    MP.s = n;
+    mpRender();
+  } else {
+    onlineCover(seq);
+  }
+}
+
+function mpShowEnd(){
+  const s = MP.s;
+  const secs = MP.startMs ? Math.max(0, Math.round(((MP.endMs || Date.now()) - MP.startMs) / 1000)) : timer;
+  lastResult = {
+    kind: MP.type === 'vs' ? 'versus' : 'coop',
+    online: MP.kind === 'online',
+    scores: [...s.scores],
+    names: [...MP.names],
+    moves: s.moves,
+    timeSeconds: secs
+  };
+  renderScoreModal();
+  scoreModal.classList.add('show');
+  trackEvent('game_complete', {
+    mode: gameMode, moves: s.moves, time_seconds: secs,
+    script: settings.script, lang: settings.lang, phon: settings.phon
+  });
+}
+
+/* =========================================================
+   同一台裝置：兩人輪流
+   ========================================================= */
+function startLocalGame(names){
+  gameId++;
+  clearInterval(timerInterval);
+  isPlaying = false;
+  gameMode = 'local';
+  MP.kind = 'local';
+  MP.type = 'vs';
+  MP.me = -1;
+  MP.names = names || MP.names;
+  MP.deckKey = '';
+  MP.lastActive = undefined;
+  MP.round = (MP.round || 0) + 1;
+  MP.s = { ...freshGameFields(MP.round % 2 === 1 ? 0 : 1), flipSeq: 0, round: MP.round };
+  MP.startMs = Date.now();
+  MP.endMs = 0;
+  setBodyMode();
+  showScreen('game');
+  resetCommonUI();
+  mpRender();
+  mpStartTimer();
+  trackEvent('game_start', { mode: 'local', script: settings.script, lang: settings.lang, phon: settings.phon });
+}
+
+/* =========================================================
+   連線：房間（Firebase）
+   ========================================================= */
+const ROOM_TTL_MS = 6 * 60 * 60 * 1000;   // 房間 6 小時後自動算過期
+const HEARTBEAT_MS = 15000;               // 每 15 秒報一次「我還在」
+const OFFLINE_AFTER_MS = 40000;           // 40 秒沒消息就當作離線
+
+function tsMillis(v){
+  if (!v) return 0;
+  if (typeof v.toMillis === 'function') return v.toMillis();
+  if (typeof v === 'number') return v;
+  return 0;
+}
+function roomExpired(d){ return tsMillis(d.expireAt) && tsMillis(d.expireAt) < Date.now(); }
+function roomLink(code){ return location.origin + location.pathname + '?sala=' + code; }
+
+async function ensureOnline(){
+  if (!db) throw new Error('no-db');
+  const ok = await authReady;
+  if (!ok || !myUid) throw new Error('no-auth');
+}
+
+function onlineNameOrError(){
+  const n = readName(playerNameInput);
+  if (!n){ setNameError('nameErr'); return null; }
+  rememberName(n);
+  return n;
+}
+
+let busy = false;
+async function createRoom(){
+  if (busy) return;
+  const name = onlineNameOrError();
+  if (!name) return;
+  const type = selectedMode === 'ocoop' ? 'coop' : 'vs';
+  busy = true;
+  setNameError('');
+  try {
+    await ensureOnline();
+    cleanupOldRooms();
+    const FV = firebase.firestore.FieldValue;
+    let code = null;
+    for (let attempt = 0; attempt < 6 && !code; attempt++){
+      const tryCode = String(1000 + Math.floor(Math.random() * 9000));
+      const ref = db.collection(ROOMS_COLLECTION).doc(tryCode);
+      try {
+        await db.runTransaction(async tx => {
+          const snap = await tx.get(ref);
+          if (snap.exists){
+            const d = snap.data();
+            if (!roomExpired(d) && d.status !== 'closed') throw new Error('taken');
+          }
+          tx.set(ref, {
+            code: tryCode, mode: type, hostUid: myUid,
+            p0: { uid: myUid, name }, p1: null,
+            seen0: FV.serverTimestamp(), seen1: null,
+            status: 'waiting', round: 0,
+            deck: [], matched: [], open: [], openBy: -1, turn: 0,
+            scores: [0, 0], moves: 0, flipSeq: 0, lastFlip: null,
+            startedAt: null, finishedAt: null,
+            createdAt: FV.serverTimestamp(),
+            expireAt: firebase.firestore.Timestamp.fromMillis(Date.now() + ROOM_TTL_MS)
+          });
+        });
+        code = tryCode;
+      } catch(e){
+        if (e.message !== 'taken') throw e;
+      }
+    }
+    if (!code) throw new Error('no-code');
+    trackEvent('room_create', { type });
+    enterRoom(code, 0);
+  } catch(err){
+    console.error(err);
+    setNameError('netErr');
+  } finally {
+    busy = false;
+  }
+}
+
+async function joinRoom(){
+  if (busy) return;
+  const name = onlineNameOrError();
+  if (!name) return;
+  const code = $('room-code-input').value.trim();
+  if (!/^[0-9]{4}$/.test(code)){ setNameError('codeErr'); return; }
+  busy = true;
+  setNameError('');
+  try {
+    await ensureOnline();
+    const ref = db.collection(ROOMS_COLLECTION).doc(code);
+    let me = -1;
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(ref);
+      if (!snap.exists) throw new Error('notfound');
+      const d = snap.data();
+      if (roomExpired(d) || d.status === 'closed') throw new Error('notfound');
+      if (d.p0 && d.p0.uid === myUid){ me = 0; return; }
+      if (d.p1 && d.p1.uid === myUid){ me = 1; return; }
+      if (d.p1) throw new Error('full');
+      tx.update(ref, { p1: { uid: myUid, name }, seen1: firebase.firestore.FieldValue.serverTimestamp() });
+      me = 1;
+    });
+    trackEvent('room_join');
+    enterRoom(code, me);
+  } catch(err){
+    if (err.message === 'notfound') setNameError('roomNotFound');
+    else if (err.message === 'full') setNameError('roomFull');
+    else { console.error(err); setNameError('netErr'); }
+  } finally {
+    busy = false;
+  }
+}
+
+/* 建立房間時順手清掉已過期的舊房間（每次最多 10 間） */
+function cleanupOldRooms(){
+  try {
+    db.collection(ROOMS_COLLECTION)
+      .where('expireAt', '<', firebase.firestore.Timestamp.now())
+      .limit(10)
+      .get()
+      .then(snap => snap.forEach(doc => doc.ref.delete().catch(() => {})))
+      .catch(() => {});
+  } catch(e){}
+}
+
+function enterRoom(code, me){
+  leaveRoomListeners();
+  mpStopTimer();
+  MP.pending.clear();
+  gameId++;
+  clearInterval(timerInterval);
+  isPlaying = false;
+  MP.kind = 'online';
+  MP.me = me;
+  MP.code = code;
+  MP.room = null;
+  MP.s = null;
+  MP.deckKey = '';
+  MP.inGameRound = -1;
+  MP.otherSeenVal = null;
+  MP.otherSeenAt = Date.now();
+  MP.otherOffline = false;
+  MP.lastActive = undefined;
+  MP.roomRef = db.collection(ROOMS_COLLECTION).doc(code);
+  try { history.replaceState(null, '', '?sala=' + code); } catch(e){}
+  $('lobby-code').textContent = code;
+  $('copy-status').textContent = '';
+  $('lobby-players').innerHTML = '';
+  $('lobby-mode').textContent = '';
+  $('lobby-status').textContent = t('loading');
+  $('lobby-start-btn').style.display = me === 0 ? '' : 'none';
+  $('lobby-start-btn').disabled = true;
+  showScreen('lobby');
+
+  MP.unsub = MP.roomRef.onSnapshot(snap => onRoomSnapshot(snap), err => {
+    console.error(err);
+    exitToMenu('netErr');
+  });
+
+  const beat = () => {
+    if (!MP.roomRef) return;
+    MP.roomRef.update({ ['seen' + MP.me]: firebase.firestore.FieldValue.serverTimestamp() }).catch(() => {});
+  };
+  beat();
+  MP.heartbeat = setInterval(beat, HEARTBEAT_MS);
+  MP.presenceId = setInterval(checkPresence, 5000);
+}
+
+function checkPresence(){
+  if (MP.kind !== 'online' || !MP.room) return;
+  const other = MP.room['p' + (1 - MP.me)];
+  const was = MP.otherOffline;
+  MP.otherOffline = !!other && (Date.now() - MP.otherSeenAt > OFFLINE_AFTER_MS);
+  if (was !== MP.otherOffline){
+    if (MP.s) mpRenderBars();
+    renderLobby(MP.room);
+  }
+}
+
+function onRoomSnapshot(snap){
+  if (!snap.exists){ exitToMenu(MP.me === 0 ? '' : 'roomClosed'); return; }
+  const d = snap.data({ serverTimestamps: 'estimate' });
+  if (d.status === 'closed' || roomExpired(d)){
+    exitToMenu(MP.me === 0 ? '' : 'roomClosed');
+    return;
+  }
+  // 自己被移出房間（例如另一台裝置用同一個身分離開）
+  const meData = d['p' + MP.me];
+  if (!meData || meData.uid !== myUid){ exitToMenu('roomClosed'); return; }
+
+  const prev = MP.room;
+  MP.room = d;
+  MP.type = d.mode === 'coop' ? 'coop' : 'vs';
+  MP.names = [d.p0 ? d.p0.name : '', d.p1 ? d.p1.name : ''];
+
+  // 對方在線狀態：看他的 seen 有沒有更新
+  const otherSeen = tsMillis(d['seen' + (1 - MP.me)]);
+  if (otherSeen !== MP.otherSeenVal){
+    MP.otherSeenVal = otherSeen;
+    MP.otherSeenAt = Date.now();
+    if (MP.otherOffline){ MP.otherOffline = false; }
+  }
+
+  // 對方離開房間
+  if (prev && prev.p1 && !d.p1 && MP.me === 0){
+    MP.notice = t('partnerLeft')(prev.p1.name);
+  }
+
+  if (d.status === 'waiting'){
+    if (gameScreen.style.display === 'block'){ gameId++; mpStopTimer(); scoreModal.classList.remove('show'); }
+    MP.s = null;
+    MP.deckKey = '';
+    showScreen('lobby');
+    renderLobby(d);
+    return;
+  }
+
+  // playing / finished
+  gameMode = MP.type === 'coop' ? 'ocoop' : 'ovs';
+  setBodyMode();
+  if (gameScreen.style.display !== 'block' || MP.inGameRound !== d.round){
+    if (MP.inGameRound !== d.round){
+      gameId++;
+      mpStopTimer();
+      resetCommonUI();
+      MP.lastActive = undefined;
+    }
+    MP.inGameRound = d.round;
+    showScreen('game');
+  }
+  MP.s = {
+    deck: d.deck, matched: d.matched, open: d.open, openBy: d.openBy, turn: d.turn,
+    scores: d.scores, moves: d.moves, flipSeq: d.flipSeq, lastFlip: d.lastFlip,
+    status: d.status, round: d.round
+  };
+  MP.startMs = tsMillis(d.startedAt);
+  MP.endMs = d.status === 'finished' ? (tsMillis(d.finishedAt) || Date.now()) : 0;
+  if (!MP.timerId && d.status === 'playing') mpStartTimer();
+  mpRender();
+}
+
+function renderLobby(d){
+  if (!d) return;
+  $('lobby-mode').textContent = d.mode === 'coop' ? t('lobbyModeCoop') : t('lobbyModeVs');
+  const list = $('lobby-players');
+  list.innerHTML = '';
+  [0, 1].forEach(p => {
+    const pl = d['p' + p];
+    const li = document.createElement('li');
+    const sw = document.createElement('span');
+    sw.className = 'swatch';
+    sw.style.background = p === 0 ? 'var(--p0)' : 'var(--p1)';
+    li.appendChild(sw);
+    const nm = document.createElement('span');
+    if (pl){
+      nm.textContent = pl.name;
+      const tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = [p === 0 ? t('host') : '', p === MP.me ? t('you') : ''].filter(Boolean).join(' · ');
+      li.append(nm, tag);
+    } else {
+      li.classList.add('empty');
+      nm.textContent = t('waitingPlayer');
+      li.appendChild(nm);
+    }
+    list.appendChild(li);
+  });
+  const startBtn = $('lobby-start-btn');
+  const status = $('lobby-status');
+  startBtn.style.display = MP.me === 0 ? '' : 'none';
+  startBtn.disabled = !d.p1;
+  if (MP.me === 0){
+    status.textContent = MP.notice || (d.p1 ? t('readyHost') : '');
+  } else {
+    status.textContent = t('waitHostStart')(d.p0 ? d.p0.name : '');
+  }
+}
+
+/* 房主開始（或再玩一局） */
+async function hostStartRound(){
+  if (MP.kind !== 'online' || MP.me !== 0 || busy) return;
+  busy = true;
+  MP.notice = '';
+  try {
+    const FV = firebase.firestore.FieldValue;
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(MP.roomRef);
+      if (!snap.exists) throw new Error('notfound');
+      const d = snap.data();
+      if (!d.p1) throw new Error('alone');
+      if (d.status === 'playing') return;
+      const round = (d.round || 0) + 1;
+      tx.update(MP.roomRef, {
+        ...freshGameFields(round % 2 === 1 ? 0 : 1),
+        round,
+        flipSeq: (d.flipSeq || 0) + 1,
+        startedAt: FV.serverTimestamp(),
+        finishedAt: null,
+        expireAt: firebase.firestore.Timestamp.fromMillis(Date.now() + ROOM_TTL_MS)
+      });
+    });
+    trackEvent('game_start', { mode: MP.type === 'coop' ? 'ocoop' : 'ovs', script: settings.script, lang: settings.lang, phon: settings.phon });
+  } catch(err){
+    console.error(err);
+    $('lobby-status').textContent = t('netErr');
+  } finally {
+    busy = false;
+  }
+}
+
+async function onlineFlip(i){
+  const s = MP.s;
+  if (!s) return;
+  // 先在自己畫面翻開，讓手感即時；最後以伺服器上的狀態為準
+  const local = applyFlip(s, i, MP.me, MP.type);
+  if (!local) return;
+  const el = board.querySelectorAll('.card')[i];
+  if (el) el.classList.add('flipped');
+  speakText(vocabById[idOfCode(s.deck[i])].trad);
+  MP.spokeLocally = true;
+  MP.pending.add(i);
+  try {
+    const FV = firebase.firestore.FieldValue;
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(MP.roomRef);
+      const d = snap.data();
+      const cur = {
+        deck: d.deck, matched: d.matched, open: d.open, openBy: d.openBy, turn: d.turn,
+        scores: d.scores, moves: d.moves, flipSeq: d.flipSeq, lastFlip: d.lastFlip, status: d.status
+      };
+      const n = applyFlip(cur, i, MP.me, MP.type);
+      if (!n) throw new Error('rejected');
+      const upd = {
+        matched: n.matched, open: n.open, openBy: n.openBy, scores: n.scores,
+        moves: n.moves, flipSeq: n.flipSeq, lastFlip: n.lastFlip, status: n.status
+      };
+      if (n.status === 'finished') upd.finishedAt = FV.serverTimestamp();
+      tx.update(MP.roomRef, upd);
+    });
+  } catch(err){
+    if (err.message !== 'rejected') console.error(err);
+    MP.spokeLocally = false;
+  } finally {
+    MP.pending.delete(i);
+    mpRender();   // 以伺服器上的狀態為準
+  }
+}
+
+async function onlineCover(seq){
+  try {
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(MP.roomRef);
+      const d = snap.data();
+      if ((d.flipSeq || 0) !== seq || !d.open || d.open.length !== 2) return;
+      tx.update(MP.roomRef, {
+        open: [], openBy: -1,
+        turn: d.mode === 'vs' ? 1 - d.turn : d.turn
+      });
+    });
+  } catch(err){
+    console.error(err);
+  }
+}
+
+function leaveRoomListeners(){
+  if (MP.unsub){ MP.unsub(); MP.unsub = null; }
+  clearInterval(MP.heartbeat); MP.heartbeat = null;
+  clearInterval(MP.presenceId); MP.presenceId = null;
+}
+
+async function leaveRoom(){
+  const ref = MP.roomRef;
+  const me = MP.me;
+  leaveRoomListeners();
+  if (ref){
+    try {
+      if (me === 0) await ref.update({ status: 'closed' });
+      else await ref.update({ p1: null, seen1: null, status: 'waiting' });
+    } catch(e){ console.error(e); }
+  }
+  exitToMenu('');
+}
+
+function exitToMenu(errKey){
+  leaveRoomListeners();
+  gameId++;
+  mpStopTimer();
+  clearInterval(timerInterval);
+  isPlaying = false;
+  MP.kind = null; MP.s = null; MP.room = null; MP.roomRef = null; MP.deckKey = ''; MP.notice = '';
+  gameMode = 'solo';
+  setBodyMode();
   scoreModal.classList.remove('show');
-  startGame();
+  try { history.replaceState(null, '', location.pathname); } catch(e){}
+  showScreen('name');
+  setNameError(errKey || '');
+}
+
+$('create-room-btn').addEventListener('click', createRoom);
+$('join-room-btn').addEventListener('click', joinRoom);
+$('room-code-input').addEventListener('keydown', e => { if (e.key === 'Enter') joinRoom(); });
+$('room-code-input').addEventListener('input', e => { e.target.value = e.target.value.replace(/\D/g, '').slice(0, 4); });
+$('lobby-start-btn').addEventListener('click', hostStartRound);
+$('lobby-leave-btn').addEventListener('click', leaveRoom);
+$('copy-link-btn').addEventListener('click', async () => {
+  const link = roomLink(MP.code);
+  try {
+    await navigator.clipboard.writeText(link);
+    $('copy-status').textContent = t('copied');
+  } catch(e){
+    $('copy-status').textContent = `${t('copyFail')} ${link}`;
+  }
+});
+
+/* ---------- 按鈕 ---------- */
+$('start-btn').addEventListener('click', () => {
+  if (gameMode === 'local') startLocalGame();
+  else startGame();
+});
+$('leave-btn').addEventListener('click', () => {
+  if (MP.kind === 'online') leaveRoom();
+  else exitToMenu('');
+});
+$('play-again-btn').addEventListener('click', () => {
+  if (!lastResult) return;
+  if (lastResult.kind === 'solo'){ scoreModal.classList.remove('show'); startGame(); }
+  else if (!lastResult.online){ scoreModal.classList.remove('show'); startLocalGame(); }
+  else if (MP.me === 0){ hostStartRound(); }
 });
 $('show-leaderboard-from-score-btn').addEventListener('click', () => {
+  if (lastResult && lastResult.kind !== 'solo'){
+    scoreModal.classList.remove('show');
+    if (MP.kind === 'online') leaveRoom(); else exitToMenu('');
+    return;
+  }
   scoreModal.classList.remove('show');
   openLeaderboard();
 });
@@ -1353,6 +2477,16 @@ $('view-leaderboard-btn').addEventListener('click', openLeaderboard);
 $('close-leaderboard-btn').addEventListener('click', () => leaderboardModal.classList.remove('show'));
 
 /* ---------- 開啟頁面時 ---------- */
+try {
+  const savedName = localStorage.getItem('memorama_name');
+  if (savedName) playerNameInput.value = savedName;
+} catch(e){}
+const urlRoom = new URLSearchParams(location.search).get('sala');
+if (urlRoom && /^[0-9]{4}$/.test(urlRoom)){
+  if (selectedMode !== 'ovs' && selectedMode !== 'ocoop') selectedMode = 'ovs';
+  $('room-code-input').value = urlRoom;
+}
+showScreen('name');
 applyAll();
 preloadImages();
 checkVoiceAvailable();

@@ -1,22 +1,32 @@
 # Memorama 翻牌記憶
 
-> 中文物品詞彙的翻牌記憶遊戲，含排行榜
+> 中文物品詞彙的翻牌記憶遊戲，含排行榜與兩人模式
 
 - **網址：** https://wangchiapin.github.io/Memorama/
-- **Firebase 專案：** memorma-24dab（與 `pop-colores-numeros` 共用）
+- **Firebase 專案：** memorma-24dab（與 `pop-colores-numeros`、`Ordena-el-Armario` 共用）
 - **登入方式：** 匿名登入
 - **狀態：** 使用中
 
-## 功能
-- 開始畫面與遊戲中可選：字體（简体／繁體）、介面語言（Español／English）、發音標示（不顯示／拼音／注音），立即生效並記在玩家瀏覽器
+## 遊戲模式
+- **單人**：可以上排行榜（`memory_game_leaderboard`）。
+- **兩人 · 同一台**：輪流翻，配對成功得 1 組並再翻一次；配錯停 1.5 秒後換人。不上排行榜。
+- **連線 · 對戰**：兩台裝置，規則同上。用 4 位數房間代碼或連結（`?sala=1234`）加入。
+- **連線 · 一起玩**：兩台裝置都可以翻，共用時間和次數；有人翻了第一張，要等他翻完第二張另一人才能翻。
+- 連線房間存在 `memorama_rooms/{代碼}`，6 小時後過期；建立新房間時會順手清掉過期房間。
+- 每 15 秒報一次在線，對方 40 秒沒消息就顯示「已離線」。
+
+## 設定（每台裝置各自）
+- 字體（简体／繁體）、介面語言（Español／English）、發音標示（不顯示／拼音／注音），立即生效並記在玩家瀏覽器
 - 拼音、注音、語音一律台灣讀音
-- 配錯時可直接點下一張牌
-- 分數存檔失敗會存在玩家瀏覽器，之後自動補送
-- GA4：`game_start`、`game_complete`、`leaderboard_view`
+
+## 其他
+- 單人配錯時可直接點下一張牌
+- 單人分數存檔失敗會存在玩家瀏覽器，之後自動補送
+- GA4：`game_start`、`game_complete`（含 mode）、`room_create`、`room_join`、`leaderboard_view`
 
 ## 圖片
 `images/images{id}.webp`（300×300）。程式會依序找 `.webp` → `.png` → 顯示 emoji。
 第 33 張（紙）尚未放圖。
 
 ## Firebase 規則
-見 `firestore-rules-snippet.txt`（只替換排行榜那一段，不要整份覆蓋）。
+`firestore-rules-full.txt` 是 memorma-24dab 的完整規則（Memorama 排行榜與房間、Ordena、色數消消樂）。

@@ -1,0 +1,143 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() { return request.auth != null; }
+    function realUser() { return request.auth != null && request.auth.token.firebase.sign_in_provider != 'anonymous'; }
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email == 'a2224907@gmail.com'
+        && request.auth.token.email_verified == true;
+    }
+
+    // ---- Memorama 翻牌記憶 排行榜 ----
+    match /memory_game_leaderboard/{docId} {
+      function m() { return request.resource.data; }
+      function okMemorama() {
+        return m().keys().hasOnly(['name','score','moves','timeSeconds','script','lang','createdAt'])
+          && m().keys().hasAll(['name','score','moves','timeSeconds','createdAt'])
+          && m().name is string && m().name.size() >= 1 && m().name.size() <= 14
+          && m().moves is int && m().moves >= 18 && m().moves <= 2000
+          && m().timeSeconds is int && m().timeSeconds >= 5
+          && m().score is int && m().score >= 0 && m().score <= 1000
+          // 分數必須跟次數、時間對得上（遊戲的計分公式）
+          && (
+            (m().timeSeconds < 300 && m().score <= 12600 / m().moves + 301 - m().timeSeconds)
+            || (m().timeSeconds >= 300 && m().score <= 12600 / m().moves + 1)
+          )
+          && m().createdAt == request.time;
+      }
+      allow read: if true;
+      allow create: if signedIn() && okMemorama();
+      allow update, delete: if false;
+    }
+
+    // ---- Memorama 連線房間（兩人對戰／一起玩；房間 6 小時後過期） ----
+    match /memorama_rooms/{code} {
+      function r() { return request.resource.data; }
+      function old() { return resource.data; }
+      function okName(n) { return n is string && n.size() >= 1 && n.size() <= 14; }
+      // 已過期或已關閉的房間，任何人都可以重新開一間同代碼的新房間，或把它刪掉
+      function reclaimable() { return old().expireAt < request.time || old().status == 'closed'; }
+      function isMember() {
+        return request.auth.uid == old().p0.uid
+          || (old().p1 != null && request.auth.uid == old().p1.uid);
+      }
+      function okShape() {
+        return r().keys().hasOnly(['code','mode','hostUid','p0','p1','seen0','seen1','status','round',
+                                   'deck','matched','open','openBy','turn','scores','moves','flipSeq',
+                                   'lastFlip','startedAt','finishedAt','createdAt','expireAt'])
+          && r().status in ['waiting','playing','finished','closed']
+          && r().deck is list && r().deck.size() <= 36
+          && r().matched is list && r().matched.size() <= 36
+          && r().open is list && r().open.size() <= 2
+          && r().expireAt is timestamp
+          && r().expireAt <= request.time + duration.value(7, 'h');
+      }
+      function validNew() {
+        return code.matches('^[0-9]{4}$')
+          && r().code == code
+          && r().mode in ['vs','coop']
+          && r().hostUid == request.auth.uid
+          && r().p0.uid == request.auth.uid && okName(r().p0.name)
+          && r().p1 == null
+          && r().status == 'waiting'
+          && okShape();
+      }
+      // 房主、房間代碼、模式建立後就不能改
+      function sameCore() {
+        return r().code == old().code && r().mode == old().mode
+          && r().hostUid == old().hostUid && r().p0 == old().p0;
+      }
+      // 第二個人加入：只能填自己的名字，其他欄位都不能動
+      function joining() {
+        return old().p1 == null && old().status == 'waiting'
+          && r().p1.uid == request.auth.uid && okName(r().p1.name)
+          && r().diff(old()).affectedKeys().hasOnly(['p1','seen1']);
+      }
+      // 房間裡的兩個人：可以翻牌、開新局；第二個人只能「維持不變」或「離開」
+      function memberUpdate() {
+        return isMember() && sameCore() && okShape()
+          && (r().p1 == old().p1 || r().p1 == null);
+      }
+      allow read: if signedIn();
+      allow create: if signedIn() && validNew();
+      allow update: if signedIn() && (
+        (reclaimable() && validNew())
+        || (!reclaimable() && (joining() || memberUpdate()))
+      );
+      allow delete: if signedIn() && (reclaimable() || request.auth.uid == old().hostUid);
+    }
+
+    // ---- Ordena el Armario 整理衣櫃 排行榜（每台裝置一筆，只留最好成績） ----
+    match /ordena_leaderboard/{uid} {
+      function o() { return request.resource.data; }
+      function okOrdena() {
+        return o().keys().hasOnly(['name','errors','secs','rank','textAid','script','lang','updatedAt'])
+          && o().keys().hasAll(['name','errors','secs','rank','textAid','updatedAt'])
+          && o().name is string && o().name.size() >= 1 && o().name.size() <= 14
+          && o().errors is int && o().errors >= 0 && o().errors <= 999
+          && o().secs is int && o().secs >= 10 && o().secs <= 99999
+          && o().textAid is bool
+          // 排名：錯誤越少越前面，錯誤一樣比時間
+          && o().rank is int
+          && o().rank == (999 - o().errors) * 100000 + (99999 - o().secs)
+          && o().updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid && okOrdena();
+      allow update: if signedIn() && request.auth.uid == uid && okOrdena()
+                    && o().rank >= resource.data.rank;
+      allow delete: if false;
+    }
+
+    // ---- 色數消消樂 排行榜 ----
+    match /colorgame_boards/{board}/entries/{uid} {
+      function validBoard() { return board.matches('^[AB]_(20|30|42)_(basic|adv)_(999|9999)$'); }
+      function maxScore() {
+        return board.matches('^[AB]_20_.*') ? 1150 : (board.matches('^[AB]_30_.*') ? 1650 : 2250);
+      }
+      function d() { return request.resource.data; }
+      function okData() {
+        return d().keys().hasOnly(['name','score','secs','hearts','cleared','rank','updatedAt'])
+          && d().keys().hasAll(['name','score','secs','hearts','cleared','rank','updatedAt'])
+          && d().name is string && d().name.size() >= 1 && d().name.size() <= 24
+          && d().score is int && d().score >= 0 && d().score <= maxScore()
+          && d().secs is int && d().secs >= 0 && d().secs <= 99999
+          && d().hearts is int && d().hearts >= 0 && d().hearts <= 5
+          && d().cleared is bool
+          && d().rank is int
+          && d().rank == d().score * 100000 + (99999 - d().secs)
+          && d().updatedAt == request.time;
+      }
+      allow read: if signedIn() && validBoard();
+      allow create: if signedIn() && request.auth.uid == uid && validBoard() && okData();
+      allow update: if signedIn() && request.auth.uid == uid && validBoard() && okData()
+                    && d().rank >= resource.data.rank;
+      allow delete: if false;
+    }
+
+
+    // ---- 教師版（teachers / teacher_configs / shared_configs）已搬到 subscription-48d3c，此專案不再提供 ----
+  }
+}
