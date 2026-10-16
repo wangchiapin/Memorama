@@ -407,6 +407,24 @@
   .phon.long{ font-size: clamp(0.5rem, 9.5cqw, 0.88rem); }
   .phon:empty{ display:none; }
 
+  /* 牌上數字（設定可開關）：牌背中間一個淡淡的數字，翻開後只留左上角小數字，不擋圖和字 */
+  .card-num, .card-num-corner{ display:none; pointer-events:none; font-variant-numeric: tabular-nums; }
+  body.show-nums .card-num, body.show-nums .card-num-corner{ display:block; }
+  .card-num{
+    font-size: clamp(0.8rem, 30cqw, 1.9rem);
+    font-weight: 300;
+    color: #9C9182;
+    letter-spacing: .02em;
+  }
+  .card-num-corner{
+    position: absolute;
+    top: 3px; left: 5px;
+    z-index: 2;
+    font-size: clamp(8px, 11cqw, 12px);
+    line-height: 1;
+    color: #B5AEA2;
+  }
+
   /* ================= 分數 / 排行榜 ================= */
   .modal-overlay{
     position: fixed; inset: 0;
@@ -912,6 +930,7 @@ const UI = {
     offline: n => `${n} se desconectó. Esperando a que vuelva…`,
     setScript: 'Caracteres', setLang: 'Idioma', setPhon: 'Pronunciación',
     phonNone: 'Nada', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
+    setNums: 'Números en las cartas', yes: 'Sí', no: 'No',
     player: 'Jugador', time: 'Tiempo', sec: 'seg', moves: 'Intentos', pairs: 'Parejas',
     restart: 'Reiniciar', ranking: 'Ranking', settings: 'Ajustes',
     logTitle: 'Registro de la partida',
@@ -965,6 +984,7 @@ const UI = {
     offline: n => `${n} disconnected. Waiting for them to come back…`,
     setScript: 'Characters', setLang: 'Language', setPhon: 'Pronunciation',
     phonNone: 'None', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
+    setNums: 'Numbers on cards', yes: 'Yes', no: 'No',
     player: 'Player', time: 'Time', sec: 's', moves: 'Moves', pairs: 'Pairs',
     restart: 'Restart', ranking: 'Ranking', settings: 'Settings',
     logTitle: 'Game log',
@@ -990,12 +1010,13 @@ const UI = {
    記在玩家自己的瀏覽器裡（連線時每個人用自己的設定）
    ========================================================= */
 const SETTINGS_KEY = 'memorama_settings';
-const settings = { script: 'simp', lang: 'es', phon: 'none' };
+const settings = { script: 'simp', lang: 'es', phon: 'none', nums: 'off' };
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
   if (saved.script === 'simp' || saved.script === 'trad') settings.script = saved.script;
   if (saved.lang === 'es' || saved.lang === 'en') settings.lang = saved.lang;
   if (['none', 'pinyin', 'zhuyin'].includes(saved.phon)) settings.phon = saved.phon;
+  if (saved.nums === 'on' || saved.nums === 'off') settings.nums = saved.nums;
 } catch(e){}
 
 function saveSettings(){
@@ -1013,7 +1034,8 @@ function meaning(item){ return item[settings.lang]; }
 const SETTING_DEFS = [
   { key: 'script', label: 'setScript', options: [['simp', () => '简体'], ['trad', () => '繁體']] },
   { key: 'lang',   label: 'setLang',   options: [['es', () => 'Español'], ['en', () => 'English']] },
-  { key: 'phon',   label: 'setPhon',   options: [['none', () => t('phonNone')], ['pinyin', () => t('phonPinyin')], ['zhuyin', () => 'ㄅㄆㄇ']] }
+  { key: 'phon',   label: 'setPhon',   options: [['none', () => t('phonNone')], ['pinyin', () => t('phonPinyin')], ['zhuyin', () => 'ㄅㄆㄇ']] },
+  { key: 'nums',   label: 'setNums',   options: [['off', () => t('no')], ['on', () => t('yes')]] }
 ];
 
 function renderSettings(){
@@ -1092,6 +1114,7 @@ function selectMode(id){
 /* 把目前設定套用到整個畫面（立刻生效） */
 function applyAll(){
   document.documentElement.lang = settings.lang;
+  document.body.classList.toggle('show-nums', settings.nums === 'on');
   document.title = t('pageTitle');
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const val = t(el.dataset.i18n);
@@ -1307,7 +1330,7 @@ function buildBoard(cards, onTap){
     cardEl.dataset.id = card.id;
     cardEl.dataset.type = card.type;
     cardEl.dataset.index = index;
-    cardEl.innerHTML = `<div class="card-inner"><div class="card-front"></div><div class="card-back"></div></div>`;
+    cardEl.innerHTML = `<div class="card-inner"><div class="card-front"><span class="card-num">${index + 1}</span></div><div class="card-back"><span class="card-num-corner">${index + 1}</span></div></div>`;
     const back = cardEl.querySelector('.card-back');
 
     if (card.type === 'img'){
@@ -1330,7 +1353,7 @@ function buildBoard(cards, onTap){
       img.src = sources[0];
       back.appendChild(img);
     } else {
-      back.innerHTML = `<div class="text-content"><div class="hanzi"></div><div class="phon"></div></div>`;
+      back.insertAdjacentHTML('beforeend', `<div class="text-content"><div class="hanzi"></div><div class="phon"></div></div>`);
       fillTextCard(cardEl);
     }
 
