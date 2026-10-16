@@ -26,7 +26,7 @@
 
 ## 圖片
 `images/images{id}.webp`（300×300）。程式會依序找 `.webp` → `.png` → 顯示 emoji。
-第 33 張（紙）尚未放圖。
+
 
 ## Firebase 規則
 `firestore-rules-full.txt` 是 memorma-24dab 的完整規則（Memorama 排行榜與房間、Ordena、色數消消樂）。
