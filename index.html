@@ -406,6 +406,7 @@
   }
   .phon.long{ font-size: clamp(0.5rem, 9.5cqw, 0.88rem); }
   .phon:empty{ display:none; }
+  .phon{ white-space: pre-line; }
 
   /* 牌上數字（設定可開關）：牌背中間一個淡淡的數字，翻開後只留左上角小數字，不擋圖和字 */
   .card-num, .card-num-corner{ display:none; pointer-events:none; font-variant-numeric: tabular-nums; }
@@ -928,8 +929,9 @@ const UI = {
     coopFree: 'Cualquiera puede voltear una carta',
     coopHolding: n => `${n} está eligiendo…`, coopMine: 'Elige la segunda carta',
     offline: n => `${n} se desconectó. Esperando a que vuelva…`,
-    setScript: 'Caracteres', setLang: 'Idioma', setPhon: 'Pronunciación',
-    phonNone: 'Nada', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
+    setScript: 'Caracteres', setLang: 'Idioma', setPhon: 'Pronunciación', setRate: 'Velocidad de voz',
+    phonNone: 'Nada', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin', phonBoth: 'Ambos', zhOnly: 'Solo chino',
+    rateSlow: 'Lento', rateNormal: 'Normal', rateFast: 'Rápido',
     setNums: 'Números en las cartas', yes: 'Sí', no: 'No',
     player: 'Jugador', time: 'Tiempo', sec: 'seg', moves: 'Intentos', pairs: 'Parejas',
     restart: 'Reiniciar', ranking: 'Ranking', settings: 'Ajustes',
@@ -983,7 +985,8 @@ const UI = {
     coopHolding: n => `${n} is choosing…`, coopMine: 'Pick the second card',
     offline: n => `${n} disconnected. Waiting for them to come back…`,
     setScript: 'Characters', setLang: 'Language', setPhon: 'Pronunciation',
-    phonNone: 'None', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin',
+    phonNone: 'None', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin', phonBoth: 'Both', zhOnly: 'Chinese only',
+    setRate: 'Voice speed', rateSlow: 'Slow', rateNormal: 'Normal', rateFast: 'Fast',
     setNums: 'Numbers on cards', yes: 'Yes', no: 'No',
     player: 'Player', time: 'Time', sec: 's', moves: 'Moves', pairs: 'Pairs',
     restart: 'Restart', ranking: 'Ranking', settings: 'Settings',
@@ -1003,38 +1006,115 @@ const UI = {
     lbFail: 'Could not load the ranking', tries: 'moves',
     noVoice: "Your device has no Chinese voice, so you won't hear the pronunciation. You can install a Chinese (Taiwan) voice in your system's language or speech settings."
   }
+  ,zh: {
+    pageTitle: '翻牌記憶：配對生活用品',
+    subtitle: '配對生活用品的中文 · 每天一分鐘',
+    nameTitle: '開始你的記憶冒險',
+    nameDesc: '選擇玩法，輸入你的名字。',
+    namePh: '輸入你的名字',
+    name1Ph: '玩家一', name2Ph: '玩家二',
+    nameErr: '請先輸入名字才能開始！',
+    names2Err: '請輸入兩位玩家的名字。',
+    enter: '進入遊戲',
+    modeLabel: '遊戲模式',
+    modeSolo: '單人', modeSoloD: '自己玩，可進入排行榜',
+    modeLocal: '雙人 · 同一台裝置', modeLocalD: '在這個畫面輪流玩',
+    modeOvs: '連線 · 對戰', modeOvsD: '兩台裝置，輪流翻牌',
+    modeOcoop: '連線 · 合作', modeOcoopD: '兩台裝置，一起和時間賽跑',
+    createRoom: '建立房間', orJoin: '或輸入房間代碼加入', join: '加入',
+    codeErr: '請輸入 4 位數字代碼。',
+    roomNotFound: '找不到這個房間，或遊戲已結束。',
+    roomFull: '房間已滿。',
+    netErr: '無法連線，請檢查網路後再試一次。',
+    roomClosed: '房間已關閉。',
+    roomTitle: '房間', shareHint: '把代碼或連結分享給你的夥伴。',
+    copyLink: '複製連結', copied: '已複製連結！', copyFail: '請複製這個連結：',
+    host: '房主', you: '你', waitingPlayer: '等待另一位玩家…',
+    startGame: '開始', leave: '離開',
+    readyHost: '兩位都到了！請按「開始」。',
+    waitHostStart: n => `等待 ${n} 開始…`,
+    lobbyModeVs: '對戰 · 輪流', lobbyModeCoop: '合作 · 一起',
+    partnerLeft: n => `${n} 離開了房間。`,
+    turnOf: n => `輪到 ${n}`, yourTurn: '輪到你了！',
+    coopFree: '任何人都可以翻牌',
+    coopHolding: n => `${n} 正在選牌…`, coopMine: '請選第二張牌',
+    offline: n => `${n} 已斷線，等待他回來…`,
+    setScript: '字體', setLang: '語言', setPhon: '拼音／注音', setRate: '語速',
+    phonNone: '關閉', phonPinyin: '拼音', phonZhuyin: '注音', phonBoth: '兩者', zhOnly: '只有中文',
+    rateSlow: '慢', rateNormal: '正常', rateFast: '快',
+    setNums: '牌上顯示數字', yes: '是', no: '否',
+    player: '玩家', time: '時間', sec: '秒', moves: '次數', pairs: '配對',
+    restart: '重新開始', ranking: '排行榜', settings: '設定',
+    logTitle: '遊戲紀錄',
+    logEmpty: '開始翻牌後，這裡會出現紀錄',
+    flipImg: '圖片', flipText: '文字', match: '配對成功！',
+    marquee1: '加油，你可以的！', marquee2: '還記得嗎？',
+    congrats: '恭喜，你完成遊戲了！',
+    winner: n => `${n} 獲勝！`, tie: '平手！', coopDone: '你們一起完成了！',
+    breakdown: (t, m) => `時間：${t} 秒 · 次數：${m}`,
+    saving: '正在把成績存進排行榜…',
+    saved: '成績已存進排行榜！',
+    queued: '目前連不上排行榜，之後會自動幫你存成績。',
+    playAgain: '再玩一次', rematch: '再來一局', waitHost: '等待房主…',
+    viewRanking: '看排行榜', close: '關閉',
+    loading: '載入中…', lbEmpty: '排行榜還沒有人，快來當第一名！',
+    lbFail: '無法載入排行榜', tries: '次',
+    noVoice: '你的裝置沒有中文語音，所以聽不到發音。可以到系統的語言或語音設定安裝中文（台灣）語音。'
+  }
 };
 
 /* =========================================================
    設定：字體 script（simp/trad）、語言 lang（es/en）、發音標示 phon（none/pinyin/zhuyin）
    記在玩家自己的瀏覽器裡（連線時每個人用自己的設定）
    ========================================================= */
-const SETTINGS_KEY = 'memorama_settings';
-const settings = { script: 'simp', lang: 'es', phon: 'none', nums: 'off' };
-try {
-  const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}');
-  if (saved.script === 'simp' || saved.script === 'trad') settings.script = saved.script;
-  if (saved.lang === 'es' || saved.lang === 'en') settings.lang = saved.lang;
-  if (['none', 'pinyin', 'zhuyin'].includes(saved.phon)) settings.phon = saved.phon;
-  if (saved.nums === 'on' || saved.nums === 'off') settings.nums = saved.nums;
-} catch(e){}
-
-function saveSettings(){
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings)); } catch(e){}
+/* 共用設定：和小狗找寶藏等遊戲同一份（hanziGames.settings）；「牌上數字」是本遊戲自己的，另外存 */
+const SETTINGS_KEY = 'hanziGames.settings';
+const OLD_SETTINGS_KEY = 'memorama_settings';
+const SET_OPTS = { script:['trad','simp'], lang:['es','en','zh'], phon:['pinyin','zhuyin','both','off'], rate:['slow','normal','fast'] };
+const RATE_VALUE = { slow:0.45, normal:0.65, fast:0.85 };
+const settings = { script: 'trad', lang: 'es', phon: 'pinyin', rate: 'normal', nums: 'off' };
+function readSettings(){
+  let saved = null, old = null;
+  try { saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null'); } catch(e){}
+  try { old = JSON.parse(localStorage.getItem(OLD_SETTINGS_KEY) || 'null'); } catch(e){}
+  if (old && (old.nums === 'on' || old.nums === 'off')) settings.nums = old.nums;
+  if (saved && typeof saved === 'object'){
+    Object.keys(SET_OPTS).forEach(k => { if (SET_OPTS[k].includes(saved[k])) settings[k] = saved[k]; });
+    return false;
+  }
+  if (old && typeof old === 'object'){            // 第一次：把舊版自己的設定搬過來
+    if (old.script === 'simp' || old.script === 'trad') settings.script = old.script;
+    if (old.lang === 'en') settings.lang = 'en';
+    if (old.phon === 'pinyin' || old.phon === 'zhuyin') settings.phon = old.phon;
+    if (old.phon === 'none') settings.phon = 'off';
+  }
+  return true;
 }
+function saveSettings(){
+  try {
+    let cur = {};
+    try { cur = JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') || {}; } catch(e){}
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(Object.assign(cur, { v:1, script:settings.script, lang:settings.lang, phon:settings.phon, rate:settings.rate })));
+    localStorage.setItem(OLD_SETTINGS_KEY, JSON.stringify({ nums: settings.nums }));
+  } catch(e){}
+}
+if (readSettings()) saveSettings();
 function t(key){ return UI[settings.lang][key]; }
 function hanzi(item){ return settings.script === 'trad' ? item.trad : item.simp; }
+const ONLYZH = () => settings.lang === 'zh';
 function phonetic(item){
   if (settings.phon === 'pinyin') return item.pinyin;
   if (settings.phon === 'zhuyin') return item.zhuyin;
+  if (settings.phon === 'both') return item.pinyin + '\n' + item.zhuyin;
   return '';
 }
-function meaning(item){ return item[settings.lang]; }
+function meaning(item){ return ONLYZH() ? '' : item[settings.lang]; }
 
 const SETTING_DEFS = [
-  { key: 'script', label: 'setScript', options: [['simp', () => '简体'], ['trad', () => '繁體']] },
-  { key: 'lang',   label: 'setLang',   options: [['es', () => 'Español'], ['en', () => 'English']] },
-  { key: 'phon',   label: 'setPhon',   options: [['none', () => t('phonNone')], ['pinyin', () => t('phonPinyin')], ['zhuyin', () => 'ㄅㄆㄇ']] },
+  { key: 'script', label: 'setScript', options: [['trad', () => '繁體'], ['simp', () => '简体']] },
+  { key: 'lang',   label: 'setLang',   options: [['es', () => '中文＋Español'], ['en', () => '中文＋English'], ['zh', () => UI.zh.zhOnly]] },
+  { key: 'phon',   label: 'setPhon',   options: [['pinyin', () => t('phonPinyin')], ['zhuyin', () => t('phonZhuyin')], ['both', () => t('phonBoth')], ['off', () => t('phonNone')]] },
+  { key: 'rate',   label: 'setRate',   options: [['slow', () => t('rateSlow')], ['normal', () => t('rateNormal')], ['fast', () => t('rateFast')]] },
   { key: 'nums',   label: 'setNums',   options: [['off', () => t('no')], ['on', () => t('yes')]] }
 ];
 
@@ -1068,7 +1148,14 @@ function changeSetting(key, value){
   settings[key] = value;
   saveSettings();
   applyAll();
+  if (key === 'rate') speakText(hanzi(vocab[0]));   // 改語速時試聽一下
 }
+// 別的分頁（其他遊戲）改了共用設定 → 這裡跟著更新
+window.addEventListener('storage', e => {
+  if (e.key !== SETTINGS_KEY) return;
+  readSettings();
+  applyAll();
+});
 
 /* =========================================================
    遊戲模式：solo 單人／local 同一台兩人／ovs 連線對戰／ocoop 連線一起玩
@@ -1113,7 +1200,7 @@ function selectMode(id){
 
 /* 把目前設定套用到整個畫面（立刻生效） */
 function applyAll(){
-  document.documentElement.lang = settings.lang;
+  document.documentElement.lang = settings.script === 'simp' ? 'zh-Hans' : 'zh-Hant';
   document.body.classList.toggle('show-nums', settings.nums === 'on');
   document.title = t('pageTitle');
   document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1241,9 +1328,9 @@ function logLine(entry){
     li.innerHTML = `${escapeHtml(who + t('match'))} <span class="zh"></span>`;
   } else {
     const type = entry.cardType === 'img' ? t('flipImg') : t('flipText');
-    li.innerHTML = `${escapeHtml(who + type)}: <span class="zh"></span> · ${escapeHtml(meaning(item))}`;
+    li.innerHTML = `${escapeHtml(who + type)}: <span class="zh"></span>${ONLYZH() ? '' : ' · ' + escapeHtml(meaning(item))}`;
   }
-  li.querySelector('.zh').textContent = hanzi(item) + (p ? ` · ${p}` : '');
+  li.querySelector('.zh').textContent = hanzi(item) + (p ? ` · ${p.replace('\n', ' / ')}` : '');
   return li;
 }
 
@@ -1553,7 +1640,7 @@ function speakText(text){
   const u = new SpeechSynthesisUtterance(text);
   u.lang = 'zh-TW';
   if (zhVoice) u.voice = zhVoice;
-  u.rate = 0.75; // 0.1（很慢）～ 10（很快），1 是正常
+  u.rate = RATE_VALUE[settings.rate]; // 慢 0.45／正常 0.65／快 0.85（和小狗找寶藏一樣）
   speechSynthesis.speak(u);
 }
 
