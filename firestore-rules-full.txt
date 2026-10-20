@@ -138,6 +138,139 @@ service cloud.firestore {
     }
 
 
+    // ---- 井遊戲：誰還在井裡（每個人只有自己的一筆；按 Y 離開就刪掉） ----
+    match /well_visitors/{uid} {
+      function w() { return request.resource.data; }
+      function okWell() {
+        return w().keys().hasOnly(['enteredAt','lastSeen'])
+          && w().keys().hasAll(['enteredAt','lastSeen'])
+          && w().enteredAt is timestamp
+          && w().lastSeen == request.time;
+      }
+      allow read: if true;
+      allow create, update: if signedIn() && request.auth.uid == uid && okWell();
+      allow delete: if signedIn() && request.auth.uid == uid;
+    }
+
+    // ---- 文字拼圖 排行榜（依片數與難度分榜，每台裝置每榜只留最好成績） ----
+    // 榜名：'8'、'10'、'12'、'15' = 輕鬆；'8r'、'10r'、'12r'、'15r' = 進階（會旋轉）
+    match /jigsaw_boards/{board}/entries/{uid} {
+      function validBoard() { return board in ['8','10','12','15','8r','10r','12r','15r']; }
+      function j() { return request.resource.data; }
+      function okJigsaw() {
+        return j().keys().hasOnly(['name','secs','moves','text','rank','script','lang','updatedAt'])
+          && j().keys().hasAll(['name','secs','moves','text','rank','updatedAt'])
+          && j().name is string && j().name.size() >= 1 && j().name.size() <= 14
+          && j().text is string && j().text.size() >= 1 && j().text.size() <= 80
+          && j().secs is int && j().secs >= 30 && j().secs <= 99999
+          && j().moves is int && j().moves >= 64 && j().moves <= 9999
+          && j().rank is int
+          && j().rank == (99999 - j().secs) * 10000 + (9999 - j().moves)
+          && j().updatedAt == request.time;
+      }
+      allow read: if signedIn() && validBoard();
+      allow create: if signedIn() && request.auth.uid == uid && validBoard() && okJigsaw();
+      allow update: if signedIn() && request.auth.uid == uid && validBoard() && okJigsaw()
+                    && j().rank >= resource.data.rank;
+      allow delete: if false;
+    }
+    // ================= 以下 5 個遊戲的公開排行榜（每台裝置每個榜只留一筆最好成績） =================
+
+    // ---- 幫媽媽買東西 ----
+    match /mama_shopping_leaderboard/{uid} {
+      function s() { return request.resource.data; }
+      function okMama() {
+        return s().keys().hasOnly(['name','score','updatedAt'])
+          && s().name is string && s().name.size() >= 1 && s().name.size() <= 14
+          && s().score is int && s().score >= 0 && s().score <= 100
+          && s().updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid && okMama();
+      allow update: if signedIn() && request.auth.uid == uid && okMama()
+                    && s().score >= resource.data.score;
+      allow delete: if false;
+    }
+
+    // ---- 把它放好（3 個關卡各記最高分，總分 = 三關相加） ----
+    match /baLeaderboard/{uid} {
+      function b() { return request.resource.data; }
+      function okBa() {
+        return b().keys().hasOnly(['name','l1','l2','l3','total','updatedAt'])
+          && b().name is string && b().name.size() >= 1 && b().name.size() <= 14
+          && b().l1 is int && b().l1 >= 0 && b().l1 <= 5000
+          && b().l2 is int && b().l2 >= 0 && b().l2 <= 5000
+          && b().l3 is int && b().l3 >= 0 && b().l3 <= 5000
+          && b().total == b().l1 + b().l2 + b().l3
+          && b().updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid && okBa();
+      allow update: if signedIn() && request.auth.uid == uid && okBa()
+                    && b().l1 >= resource.data.l1
+                    && b().l2 >= resource.data.l2
+                    && b().l3 >= resource.data.l3;
+      allow delete: if false;
+    }
+
+    // ---- 問路小達人（4 個關卡，分數高的贏，同分比時間短） ----
+    match /{col}/{uid} {
+      function a() { return request.resource.data; }
+      function validAskBoard() { return col.matches('^askDirections_L[1-4]$'); }
+      function okAsk() {
+        return a().keys().hasOnly(['name','score','time','level','updatedAt'])
+          && a().name is string && a().name.size() >= 1 && a().name.size() <= 14
+          && a().score is int && a().score >= 0 && a().score <= 1000
+          && a().time is int && a().time >= 0 && a().time <= 99999
+          && a().level is int && a().level >= 1 && a().level <= 4
+          && a().updatedAt == request.time;
+      }
+      allow read: if validAskBoard();
+      allow create: if validAskBoard() && signedIn() && request.auth.uid == uid && okAsk();
+      allow update: if validAskBoard() && signedIn() && request.auth.uid == uid && okAsk()
+                    && (a().score > resource.data.score
+                        || (a().score == resource.data.score && a().time < resource.data.time));
+      allow delete: if false;
+    }
+
+    // ---- 我要拿什麼？（關卡 1～9，各一個榜） ----
+    match /{col}/{uid} {
+      function g() { return request.resource.data; }
+      function validHomeBoard() { return col.matches('^homefetchmap_L[1-9]$'); }
+      function okHome() {
+        return g().keys().hasOnly(['name','score','listen','updatedAt'])
+          && g().name is string && g().name.size() >= 1 && g().name.size() <= 14
+          && g().score is int && g().score >= 0 && g().score <= 20000
+          && g().listen is bool
+          && g().updatedAt == request.time;
+      }
+      allow read: if validHomeBoard();
+      allow create: if validHomeBoard() && signedIn() && request.auth.uid == uid && okHome();
+      allow update: if validHomeBoard() && signedIn() && request.auth.uid == uid && okHome()
+                    && g().score >= resource.data.score;
+      allow delete: if false;
+    }
+
+    // ---- 墨龍飛天（10 個主題，各一個榜） ----
+    match /inkdragon_boards/{theme}/entries/{uid} {
+      function k() { return request.resource.data; }
+      function okDragon() {
+        return theme in ['food','fruit','animal','color','transport','body','clothes','job','weather','home']
+          && k().keys().hasOnly(['name','score','correct','altitude','updatedAt'])
+          && k().name is string && k().name.size() >= 1 && k().name.size() <= 14
+          && k().score is int && k().score >= 0 && k().score <= 100000
+          && k().correct is int && k().correct >= 0 && k().correct <= 5000
+          && k().altitude is int && k().altitude >= 0 && k().altitude <= 1000000
+          && k().updatedAt == request.time;
+      }
+      allow read: if theme in ['food','fruit','animal','color','transport','body','clothes','job','weather','home'];
+      allow create: if signedIn() && request.auth.uid == uid && okDragon();
+      allow update: if signedIn() && request.auth.uid == uid && okDragon()
+                    && k().score >= resource.data.score;
+      allow delete: if false;
+    }
+
+
     // ---- 教師版（teachers / teacher_configs / shared_configs）已搬到 subscription-48d3c，此專案不再提供 ----
   }
 }
