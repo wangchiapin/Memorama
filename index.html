@@ -202,6 +202,14 @@
   .stats{ display:flex; flex-direction: column; gap: 10px; font-size: 0.82rem; color: var(--sub); letter-spacing: .06em; }
   .stats b{ color: var(--ink); font-weight: 500; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
   .sidebar-col .btn{ width: 100%; }
+  .mode-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 2px; overflow: hidden; }
+  .mode-grid button{
+    font-family: inherit; font-size: 0.82rem; letter-spacing: .03em; line-height: 1.3;
+    padding: 6px 4px; min-height: 42px; border: 0; background: var(--paper); color: var(--sub);
+    cursor: pointer; transition: background .2s, color .2s;
+  }
+  .mode-grid button.active{ background: var(--accent-soft); color: var(--ink); font-weight: 500; }
+  .sidebar-col.compact .mode-grid button{ min-height: 34px; padding: 3px 2px; }
   .sidebar-col.compact{ gap: 10px; padding: 16px 18px 16px; }
   .sidebar-col.compact .settings-block{ gap: 8px; }
   .sidebar-col.compact .setting-group{ gap: 4px; }
@@ -754,6 +762,7 @@
       </div>
       <div class="sidebar-divider"></div>
       <div class="settings-block" data-settings></div>
+      <div class="settings-block" id="ingame-modes"></div>
     </aside>
 
     <aside class="log-col panel" id="log-col">
@@ -901,6 +910,8 @@ const UI = {
     modeLocal: 'Dos jugadores · mismo dispositivo', modeLocalD: 'Por turnos en esta pantalla',
     modeOvs: 'En línea · competir', modeOvsD: 'Dos dispositivos, por turnos',
     modeOcoop: 'En línea · cooperar', modeOcoopD: 'Dos dispositivos, juntos contra el reloj',
+    modeShortSolo: '1 jugador', modeShortLocal: '2 jugadores', modeShortOvs: 'En línea · competir', modeShortOcoop: 'En línea · cooperar',
+    leaveGameConfirm: '¿Salir de esta partida? Se perderá el progreso.',
     createRoom: 'Crear sala', orJoin: 'o únete a una sala con su código', join: 'Unirse',
     codeErr: 'Escribe el código de 4 números.',
     roomNotFound: 'No existe esa sala o ya terminó.',
@@ -954,6 +965,8 @@ const UI = {
     modeLocal: 'Two players · same device', modeLocalD: 'Take turns on this screen',
     modeOvs: 'Online · compete', modeOvsD: 'Two devices, taking turns',
     modeOcoop: 'Online · cooperate', modeOcoopD: 'Two devices, together against the clock',
+    modeShortSolo: '1 player', modeShortLocal: '2 players', modeShortOvs: 'Online · compete', modeShortOcoop: 'Online · co-op',
+    leaveGameConfirm: 'Leave this game? Your progress will be lost.',
     createRoom: 'Create room', orJoin: 'or join a room with its code', join: 'Join',
     codeErr: 'Enter the 4-digit code.',
     roomNotFound: 'That room does not exist or has ended.',
@@ -1007,6 +1020,8 @@ const UI = {
     modeLocal: '雙人 · 同一台裝置', modeLocalD: '在這個畫面輪流玩',
     modeOvs: '連線 · 對戰', modeOvsD: '兩台裝置，輪流翻牌',
     modeOcoop: '連線 · 合作', modeOcoopD: '兩台裝置，一起和時間賽跑',
+    modeShortSolo: '單人', modeShortLocal: '雙人 · 同台', modeShortOvs: '連線 · 對戰', modeShortOcoop: '連線 · 合作',
+    leaveGameConfirm: '確定離開這局？目前的進度不會保留。',
     createRoom: '建立房間', orJoin: '或輸入房間代碼加入', join: '加入',
     codeErr: '請輸入 4 位數字代碼。',
     roomNotFound: '找不到這個房間，或遊戲已結束。',
@@ -1176,6 +1191,42 @@ function renderModes(){
   playerNameInput.classList.toggle('p0-line', selectedMode === 'local');
   $('player2-name').placeholder = t('name2Ph');
 }
+/* 遊戲中的模式切換（右欄）：離開這局，回開始畫面並選好該模式 */
+const MODE_SHORT = { solo:'modeShortSolo', local:'modeShortLocal', ovs:'modeShortOvs', ocoop:'modeShortOcoop' };
+function renderIngameModes(){
+  const box = $('ingame-modes');
+  if (!box) return;
+  box.innerHTML = '';
+  const group = document.createElement('div');
+  group.className = 'setting-group';
+  const label = document.createElement('div');
+  label.className = 'setting-label';
+  label.textContent = t('modeLabel');
+  const grid = document.createElement('div');
+  grid.className = 'mode-grid';
+  MODES.forEach(([id]) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.textContent = t(MODE_SHORT[id]);
+    if (gameMode === id) b.classList.add('active');
+    b.addEventListener('click', () => switchModeInGame(id));
+    grid.appendChild(b);
+  });
+  group.append(label, grid);
+  box.appendChild(group);
+}
+function gameHasProgress(){
+  if (gameMode === 'solo') return isPlaying && (moves > 0 || flippedCards.length > 0);
+  const st = MP.s;
+  return !!(st && st.status === 'playing' && ((st.moves || 0) > 0 || (st.open && st.open.length > 0)));
+}
+async function switchModeInGame(id){
+  if (id === gameMode) return;
+  if (gameHasProgress() && !window.confirm(t('leaveGameConfirm'))) return;
+  if (MP.kind === 'online') await leaveRoom(); else exitToMenu('');
+  selectMode(id);
+}
+
 function selectMode(id){
   selectedMode = id;
   try { localStorage.setItem('memorama_mode', id); } catch(e){}
@@ -1194,6 +1245,7 @@ function applyAll(){
   });
   if (nameErrorKey) nameError.textContent = t(nameErrorKey);
   renderModes();
+  renderIngameModes();
   renderSettings();
   refreshCardTexts();
   renderLog();
@@ -1486,6 +1538,7 @@ function setBodyMode(){
   document.body.classList.toggle('versus', gameMode === 'local' || gameMode === 'ovs');
   document.body.classList.toggle('coop', gameMode === 'ocoop');
   if (!mp) document.body.classList.remove('wait-turn');
+  renderIngameModes();
   fitLayout();
 }
 
