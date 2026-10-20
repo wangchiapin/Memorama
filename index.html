@@ -1093,7 +1093,18 @@ function saveSettings(){
   } catch(e){}
 }
 if (readSettings()) saveSettings();
-function t(key){ return UI[settings.lang][key]; }
+/* 「只有中文」的介面文字是繁體字；選簡體時轉成簡體（只轉介面固定文字，玩家名字不轉） */
+const UI_T2S_FROM = '來個們兩動勝單嗎圖夥對幫後憶戰戲數斷時會檢沒滿灣無獲現畫當發確碼紀結給統網線績聽裝裡製複記設試語請賽載輪輸這連進遊還錄閉開間關險雙離顯體', UI_T2S_TO = '来个们两动胜单吗图伙对帮后忆战戏数断时会检没满湾无获现画当发确码纪结给统网线绩听装里制复记设试语请赛载轮输这连进游还录闭开间关险双离显体';
+function uiToSimp(str){ return String(str).replace(/[\u4e00-\u9fff]/g, c => { const i = UI_T2S_FROM.indexOf(c); return i < 0 ? c : UI_T2S_TO[i]; }); }
+function t(key){
+  const v = UI[settings.lang][key];
+  if (settings.lang !== 'zh' || settings.script !== 'simp') return v;
+  if (typeof v !== 'function') return uiToSimp(v);
+  return (...args) => {
+    const out = uiToSimp(v(...args.map((_, i) => '\u0001' + i + '\u0002')));
+    return out.replace(/\u0001(\d+)\u0002/g, (_, i) => args[+i]);
+  };
+}
 function hanzi(item){ return settings.script === 'trad' ? item.trad : item.simp; }
 const ONLYZH = () => settings.lang === 'zh';
 function phonetic(item){
