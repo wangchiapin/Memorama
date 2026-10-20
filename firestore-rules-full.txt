@@ -272,6 +272,26 @@ service cloud.firestore {
     }
 
 
+    // ---- 小狗找寶藏（3 關各一個榜，每台裝置每關只留一筆最好成績；2026-10-21 由 perrito 專案併進來） ----
+    match /perrito_boards/{board}/entries/{uid} {
+      function pd() { return request.resource.data; }
+      function okPerrito() {
+        return board in ['level2', 'level3', 'level4']
+          && pd().keys().hasOnly(['name', 'score', 'think', 'secs', 'errors', 'presses', 'acc', 'replays', 'rank', 'updatedAt'])
+          && pd().name is string && pd().name.size() > 0 && pd().name.size() <= 36
+          && pd().score is int && pd().score >= 0 && pd().score <= 1000
+          && pd().rank is int
+          && pd().rank >= pd().score * 100000
+          && pd().rank < (pd().score + 1) * 100000
+          && pd().updatedAt == request.time;
+      }
+      allow read: if board in ['level2', 'level3', 'level4'];
+      allow create: if signedIn() && request.auth.uid == uid && okPerrito();
+      allow update: if signedIn() && request.auth.uid == uid && okPerrito()
+                    && pd().rank > resource.data.rank;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
+    }
+
     // ---- 教師版（teachers / teacher_configs / shared_configs）已搬到 subscription-48d3c，此專案不再提供 ----
   }
 }
