@@ -647,7 +647,6 @@
   .pchip.active.p1{ border-color: var(--p1); background: var(--p1-soft); }
   .pchip.bump{ animation: bump .5s ease; }
   @keyframes bump{ 0%{ transform: scale(1); } 40%{ transform: scale(1.05); } 100%{ transform: scale(1); } }
-  body.coop .pchip .pscore{ display:none; }
   .mp-turn{
     width: 100%; max-width: 680px; margin: -2px auto 10px;
     font-size: 0.84rem; letter-spacing: .06em; color: var(--sub); min-height: 1.3em; display:none;
@@ -1785,7 +1784,7 @@ function renderScoreModal(){
     $('end-title').textContent = t('coopDone');
     show('final-score', true); show('vs-score', false); show('vs-names', true);
     $('final-score').textContent = fmtTime(r.timeSeconds);
-    $('vs-names').textContent = `${r.names[0]} + ${r.names[1]}`;
+    $('vs-names').textContent = `${r.names[0]} ${r.scores[0]} + ${r.names[1]} ${r.scores[1]}`;
   }
   $('score-breakdown').textContent = t('breakdown')(r.timeSeconds, r.moves);
 
