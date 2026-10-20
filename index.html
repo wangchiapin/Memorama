@@ -53,7 +53,7 @@
   h1, h2, h3{ margin: 0; font-weight: 500; }
 
   /* ---------- 標題：一行小字、字距拉開 ---------- */
-  .title-banner{ margin: 28px 0 6px; }
+  .title-banner{ margin: 28px 0 22px; }
   .title-banner h1{
     font-size: 1.05rem;
     font-weight: 400;
@@ -62,14 +62,7 @@
     color: var(--ink);
     text-transform: uppercase;
   }
-  .subtitle{
-    margin: 0 0 26px;
-    color: var(--sub);
-    font-size: 0.78rem;
-    letter-spacing: .12em;
-  }
   body.in-game .title-banner{ margin: 14px 0 16px; }
-  body.in-game .subtitle{ display:none; }
 
   /* ================= 設定（字體／語言／發音標示） ================= */
   .setting-group{ display:flex; flex-direction:column; gap:6px; text-align:left; }
@@ -111,13 +104,8 @@
   }
   .seal{ display:none; }
   #name-screen h2{ font-size: 1.05rem; letter-spacing: .08em; }
-  #name-screen p.desc{
-    color: var(--sub);
-    font-size: 0.84rem;
-    line-height: 1.9;
-    margin: 12px 0 24px;
-  }
-  #name-screen .settings-block{ margin: 0 0 22px; }
+  #name-screen h2{ margin-bottom: 22px; }
+  #name-screen .settings-block{ margin: 28px 0 22px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
   #player-name{
     width: 100%;
     padding: 11px 14px;
@@ -160,7 +148,7 @@
   .game-layout{
     display: flex;
     gap: 28px;
-    max-width: 1180px;
+    max-width: 1600px;
     margin: 0 auto;
     align-items: flex-start;
     justify-content: center;
@@ -177,28 +165,28 @@
     order: 3;
   }
   .log-col{
-    flex: 0 0 230px;
-    padding: 20px 18px 16px;
+    flex: 0 0 300px;
+    padding: 22px 22px 18px;
     display: flex;
     flex-direction: column;
     gap: 12px;
     text-align: left;
     order: 1;
-    max-height: 560px;
+    min-height: 0;
   }
-  .log-col h3{ font-size: 0.78rem; font-weight: 400; color: var(--sub); letter-spacing: .12em; }
-  .log-list{ list-style: none; margin: 0; padding: 0; overflow-y: auto; display: flex; flex-direction: column; }
+  .log-col h3{ font-size: 0.95rem; font-weight: 400; color: var(--sub); letter-spacing: .12em; }
+  .log-list{ list-style: none; margin: 0; padding: 0; overflow-y: auto; flex: 1; min-height: 0; display: flex; flex-direction: column; }
   .log-list li{
-    font-size: 0.78rem;
+    font-size: 0.98rem;
     line-height: 1.6;
-    padding: 8px 0;
+    padding: 9px 0;
     border-bottom: 1px solid var(--line-soft);
     color: var(--sub);
     word-break: break-word;
   }
   .log-list li.log-success{ color: var(--accent-text); }
   .log-list li .zh{ font-weight: 500; color: var(--ink); }
-  .log-empty{ font-size: 0.78rem; color: #B5AEA2; border-bottom: 0 !important; }
+  .log-empty{ font-size: 0.95rem; color: #B5AEA2; border-bottom: 0 !important; }
   .sidebar-divider{ height: 1px; background: var(--line-soft); }
 
   .player-chip{
@@ -214,6 +202,12 @@
   .stats{ display:flex; flex-direction: column; gap: 10px; font-size: 0.82rem; color: var(--sub); letter-spacing: .06em; }
   .stats b{ color: var(--ink); font-weight: 500; font-size: 1.05rem; font-variant-numeric: tabular-nums; }
   .sidebar-col .btn{ width: 100%; }
+  .sidebar-col.compact{ gap: 10px; padding: 16px 18px 16px; }
+  .sidebar-col.compact .settings-block{ gap: 8px; }
+  .sidebar-col.compact .setting-group{ gap: 4px; }
+  .sidebar-col.compact .seg button{ min-height: 32px; padding: 3px 2px; }
+  .sidebar-col.compact .bar-buttons{ gap: 6px; }
+  .sidebar-col.compact .stats{ gap: 6px; }
   .bar-buttons{ display:flex; flex-direction:column; gap: 10px; }
   #settings-toggle-btn{ display:none; }
   #voice-hint{
@@ -290,7 +284,7 @@
     grid-template-columns: repeat(6, 1fr);
     gap: 10px;
     width: 100%;
-    max-width: 680px;
+    max-width: var(--bs, 680px);
     margin: 0 auto;
   }
   @media (max-width: 1150px){
@@ -621,7 +615,7 @@
   #lobby-start-btn:disabled{ opacity: .35; cursor: not-allowed; }
 
   /* ================= 對戰列（遊戲中） ================= */
-  .mp-bar{ display:none; width: 100%; max-width: 680px; margin: 0 auto 10px; align-items: stretch; gap: 8px; }
+  .mp-bar{ display:none; width: 100%; max-width: var(--bs, 680px); margin: 0 auto 10px; align-items: stretch; gap: 8px; }
   body.mp .mp-bar{ display:flex; }
   .pchip{
     flex: 1;
@@ -691,19 +685,14 @@
 </div>
 
 <div class="title-banner"><h1>Memorama</h1></div>
-<div class="subtitle" data-i18n="subtitle"></div>
 
 <!-- ================= 開始畫面 ================= -->
 <div id="name-screen">
   <h2 data-i18n="nameTitle"></h2>
-  <p class="desc" data-i18n="nameDesc"></p>
-  <div class="settings-block" data-settings></div>
-  <div class="setting-group mode-group">
-    <div class="setting-label" data-i18n="modeLabel"></div>
-    <div class="mode-list" id="mode-list"></div>
-  </div>
   <input type="text" id="player-name" class="name-input" maxlength="14" autocomplete="nickname">
   <input type="text" id="player2-name" class="name-input" maxlength="14" autocomplete="off">
+  <div id="name-error"></div>
+  <button class="btn" id="confirm-name-btn" data-i18n="enter"></button>
   <div id="online-box">
     <button class="btn" id="create-room-btn" data-i18n="createRoom"></button>
     <div class="or-line" data-i18n="orJoin"></div>
@@ -712,8 +701,11 @@
       <button class="btn ghost" id="join-room-btn" data-i18n="join"></button>
     </div>
   </div>
-  <div id="name-error"></div>
-  <button class="btn" id="confirm-name-btn" data-i18n="enter"></button>
+  <div class="settings-block" data-settings></div>
+  <div class="setting-group mode-group">
+    <div class="setting-label" data-i18n="modeLabel"></div>
+    <div class="mode-list" id="mode-list"></div>
+  </div>
 </div>
 
 <!-- ================= 連線等待畫面 ================= -->
@@ -898,9 +890,7 @@ const vocabById = Object.fromEntries(vocab.map(v => [v.id, v]));
 const UI = {
   es: {
     pageTitle: 'Memorama: Empareja objetos cotidianos en chino',
-    subtitle: 'Empareja objetos cotidianos en chino · Un minuto de chino al día',
     nameTitle: 'Comienza tu aventura de memoria',
-    nameDesc: 'Elige cómo quieres jugar y escribe tu nombre.',
     namePh: 'Escribe tu nombre',
     name1Ph: 'Jugador 1', name2Ph: 'Jugador 2',
     nameErr: '¡Escribe tu nombre para poder empezar!',
@@ -953,9 +943,7 @@ const UI = {
   },
   en: {
     pageTitle: 'Memorama: Match everyday objects in Chinese',
-    subtitle: 'Match everyday objects in Chinese · One minute of Chinese a day',
     nameTitle: 'Start your memory adventure',
-    nameDesc: 'Choose how you want to play and enter your name.',
     namePh: 'Your name',
     name1Ph: 'Player 1', name2Ph: 'Player 2',
     nameErr: 'Please enter your name to start!',
@@ -1008,9 +996,7 @@ const UI = {
   }
   ,zh: {
     pageTitle: '翻牌記憶：配對生活用品',
-    subtitle: '配對生活用品的中文 · 每天一分鐘',
     nameTitle: '開始你的記憶冒險',
-    nameDesc: '選擇玩法，輸入你的名字。',
     namePh: '輸入你的名字',
     name1Ph: '玩家一', name2Ph: '玩家二',
     nameErr: '請先輸入名字才能開始！',
@@ -1148,7 +1134,6 @@ function changeSetting(key, value){
   settings[key] = value;
   saveSettings();
   applyAll();
-  if (key === 'rate') speakText(hanzi(vocab[0]));   // 改語速時試聽一下
 }
 // 別的分頁（其他遊戲）改了共用設定 → 這裡跟著更新
 window.addEventListener('storage', e => {
@@ -1216,6 +1201,7 @@ function applyAll(){
   if (MP.kind === 'online' && MP.room) renderLobby(MP.room);
   if (scoreModal.classList.contains('show')) renderScoreModal();
   if (leaderboardModal.classList.contains('show')) loadLeaderboard();
+  fitLayout();
 }
 
 /* =========================================================
@@ -1261,11 +1247,43 @@ const logCol = $('log-col');
 
 $('pairs-total').textContent = PAIR_COUNT;
 
+/* 寬螢幕：牌面放大到和右欄一樣高（上下切齊）；左欄也跟著等高 */
+function fitLayout(){
+  if (fitLayout.busy) return;
+  fitLayout.busy = true;
+  try {
+    const boardCol = document.querySelector('.board-col');
+    const layout = document.querySelector('.game-layout');
+    boardCol.style.removeProperty('--bs');
+    logCol.style.height = '';
+    sidebar.classList.remove('compact');
+    if (gameScreen.style.display === 'none' || window.innerWidth <= 1150) return;
+    const top = board.offsetTop - boardCol.offsetTop;           // 牌面上方的列（兩人模式的分數列等）
+    const calcAvail = () => layout.clientWidth - logCol.offsetWidth - sidebar.offsetWidth - 56;
+    let avail = calcAvail();
+    let H = sidebar.offsetHeight;
+    if (H - top > avail || H + 80 > window.innerHeight){        // 放不下（寬度或螢幕高度）就把右欄縮緊一點
+      sidebar.classList.add('compact');
+      H = sidebar.offsetHeight;
+      avail = calcAvail();                                      // 縮緊後右欄也變窄，可用寬度要重算
+    }
+    const size = Math.max(280, Math.min(H - top, avail));
+    boardCol.style.setProperty('--bs', Math.floor(size) + 'px');
+    logCol.style.height = Math.max(H, Math.ceil(size + top)) + 'px';
+  } finally {
+    fitLayout.busy = false;
+  }
+}
+window.addEventListener('resize', fitLayout);
+if (window.ResizeObserver) new ResizeObserver(() => requestAnimationFrame(fitLayout)).observe(sidebar);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitLayout);
+
 function showScreen(which){
   nameScreen.style.display = which === 'name' ? 'block' : 'none';
   lobbyScreen.style.display = which === 'lobby' ? 'block' : 'none';
   gameScreen.style.display = which === 'game' ? 'block' : 'none';
   document.body.classList.toggle('in-game', which === 'game');
+  fitLayout();
 }
 
 function setNameError(key, extra){
@@ -1468,6 +1486,7 @@ function setBodyMode(){
   document.body.classList.toggle('versus', gameMode === 'local' || gameMode === 'ovs');
   document.body.classList.toggle('coop', gameMode === 'ocoop');
   if (!mp) document.body.classList.remove('wait-turn');
+  fitLayout();
 }
 
 function resetCommonUI(){
