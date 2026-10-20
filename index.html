@@ -1688,7 +1688,7 @@ function pickVoice(){
   if (!('speechSynthesis' in window)) return;
   const voices = speechSynthesis.getVoices();
   zhVoice = voices.find(v => /zh[-_]TW/i.test(v.lang))
-         || voices.find(v => /^zh/i.test(v.lang) || /cmn/i.test(v.lang))
+         || voices.find(v => (/^zh/i.test(v.lang) || /cmn/i.test(v.lang)) && !/^(yue|zh[-_]hk)/i.test(v.lang))   /* 排除廣東話 */
          || null;
   if (zhVoice) $('voice-hint').classList.remove('show');
 }
