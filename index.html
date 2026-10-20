@@ -2536,7 +2536,7 @@ async function onlineFlip(i){
       const n = applyFlip(cur, i, MP.me, MP.type);
       if (!n) throw new Error('rejected');
       const upd = {
-        matched: n.matched, open: n.open, openBy: n.openBy, scores: n.scores,
+        matched: n.matched, open: n.open, openBy: n.openBy, turn: n.turn, scores: n.scores,
         moves: n.moves, flipSeq: n.flipSeq, lastFlip: n.lastFlip, status: n.status
       };
       if (n.status === 'finished') upd.finishedAt = FV.serverTimestamp();
