@@ -292,6 +292,48 @@ service cloud.firestore {
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
+    // ---- 遊玩紀錄（2026-10-21 新增；每局一筆，開始時建立、玩完時補上結果；後台「遊玩紀錄」分頁用） ----
+    match /plays/{playId} {
+      function pl() { return request.resource.data; }
+      function okPlayNew() {
+        return pl().keys().hasOnly(['game', 'level', 'uid', 'name', 'day', 'startedAt', 'done'])
+          && pl().game is string && pl().game.size() >= 1 && pl().game.size() <= 30
+          && pl().level is string && pl().level.size() <= 30
+          && pl().uid == request.auth.uid
+          && pl().name is string && pl().name.size() <= 36
+          && pl().day is string && pl().day.size() == 10
+          && pl().startedAt == request.time
+          && pl().done == false;
+      }
+      function okPlayEnd() {
+        return resource.data.uid == request.auth.uid
+          && resource.data.done == false
+          && pl().diff(resource.data).affectedKeys().hasOnly(['done', 'score', 'secs', 'endedAt', 'name'])
+          && pl().done == true
+          && pl().endedAt == request.time
+          && pl().secs is number && pl().secs >= 0 && pl().secs <= 86400
+          && (!('score' in pl()) || (pl().score is number && pl().score >= -1000000000 && pl().score <= 1000000000))
+          && (!('name' in pl()) || (pl().name is string && pl().name.size() <= 36));
+      }
+      allow create: if signedIn() && okPlayNew();
+      allow update: if signedIn() && okPlayEnd();
+      allow read, delete: if isAdmin();
+    }
+
+    // ---- 訪客（每台裝置、每天、每個遊戲一筆；文件編號 = 日期_遊戲_裝置編號） ----
+    match /visits/{visitId} {
+      function vd() { return request.resource.data; }
+      allow create: if signedIn()
+        && vd().keys().hasOnly(['game', 'day', 'uid', 'at'])
+        && vd().game is string && vd().game.size() >= 1 && vd().game.size() <= 30
+        && vd().day is string && vd().day.size() == 10
+        && vd().uid == request.auth.uid
+        && visitId == vd().day + '_' + vd().game + '_' + request.auth.uid
+        && vd().at == request.time;
+      allow update: if false;
+      allow read, delete: if isAdmin();
+    }
+
     // ---- 教師版（teachers / teacher_configs / shared_configs）已搬到 subscription-48d3c，此專案不再提供 ----
   }
 }
