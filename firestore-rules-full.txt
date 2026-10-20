@@ -29,7 +29,8 @@ service cloud.firestore {
       }
       allow read: if true;
       allow create: if signedIn() && okMemorama();
-      allow update, delete: if false;
+      allow update: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- Memorama 連線房間（兩人對戰／一起玩；房間 6 小時後過期） ----
@@ -108,7 +109,7 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && okOrdena();
       allow update: if signedIn() && request.auth.uid == uid && okOrdena()
                     && o().rank >= resource.data.rank;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- 色數消消樂 排行榜 ----
@@ -134,7 +135,7 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && validBoard() && okData();
       allow update: if signedIn() && request.auth.uid == uid && validBoard() && okData()
                     && d().rank >= resource.data.rank;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
 
@@ -172,7 +173,7 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && validBoard() && okJigsaw();
       allow update: if signedIn() && request.auth.uid == uid && validBoard() && okJigsaw()
                     && j().rank >= resource.data.rank;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
     // ================= 以下 5 個遊戲的公開排行榜（每台裝置每個榜只留一筆最好成績） =================
 
@@ -189,7 +190,7 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && okMama();
       allow update: if signedIn() && request.auth.uid == uid && okMama()
                     && s().score >= resource.data.score;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- 把它放好（3 個關卡各記最高分，總分 = 三關相加） ----
@@ -210,7 +211,7 @@ service cloud.firestore {
                     && b().l1 >= resource.data.l1
                     && b().l2 >= resource.data.l2
                     && b().l3 >= resource.data.l3;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- 問路小達人（4 個關卡，分數高的贏，同分比時間短） ----
@@ -230,7 +231,7 @@ service cloud.firestore {
       allow update: if validAskBoard() && signedIn() && request.auth.uid == uid && okAsk()
                     && (a().score > resource.data.score
                         || (a().score == resource.data.score && a().time < resource.data.time));
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- 我要拿什麼？（關卡 1～9，各一個榜） ----
@@ -248,7 +249,7 @@ service cloud.firestore {
       allow create: if validHomeBoard() && signedIn() && request.auth.uid == uid && okHome();
       allow update: if validHomeBoard() && signedIn() && request.auth.uid == uid && okHome()
                     && g().score >= resource.data.score;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
     // ---- 墨龍飛天（10 個主題，各一個榜） ----
@@ -267,7 +268,7 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && okDragon();
       allow update: if signedIn() && request.auth.uid == uid && okDragon()
                     && k().score >= resource.data.score;
-      allow delete: if false;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
 
