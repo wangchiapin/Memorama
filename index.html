@@ -909,7 +909,7 @@ const UI = {
     modeSolo: 'Un jugador', modeSoloD: 'Juega solo y entra al ranking',
     modeLocal: 'Dos jugadores · mismo dispositivo', modeLocalD: 'Por turnos en esta pantalla',
     modeOvs: 'En línea · competir', modeOvsD: 'Dos dispositivos, por turnos',
-    modeOcoop: 'En línea · cooperar', modeOcoopD: 'Dos dispositivos, juntos contra el reloj',
+    modeOcoop: 'En línea · cooperar', modeOcoopD: 'Dos dispositivos, por turnos, juntos contra el reloj',
     modeShortSolo: '1 jugador', modeShortLocal: '2 jugadores', modeShortOvs: 'En línea · competir', modeShortOcoop: 'En línea · cooperar',
     leaveGameConfirm: '¿Salir de esta partida? Se perderá el progreso.',
     createRoom: 'Crear sala', orJoin: 'o únete a una sala con su código', join: 'Unirse',
@@ -927,8 +927,6 @@ const UI = {
     lobbyModeVs: 'Competir · por turnos', lobbyModeCoop: 'Cooperar · juntos',
     partnerLeft: n => `${n} salió de la sala.`,
     turnOf: n => `Turno de ${n}`, yourTurn: '¡Tu turno!',
-    coopFree: 'Cualquiera puede voltear una carta',
-    coopHolding: n => `${n} está eligiendo…`, coopMine: 'Elige la segunda carta',
     offline: n => `${n} se desconectó. Esperando a que vuelva…`,
     setScript: 'Caracteres', setLang: 'Idioma', setPhon: 'Pronunciación', setRate: 'Velocidad de voz',
     phonNone: 'Nada', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin', phonBoth: 'Ambos', zhOnly: 'Solo chino',
@@ -964,7 +962,7 @@ const UI = {
     modeSolo: 'One player', modeSoloD: 'Play alone and join the ranking',
     modeLocal: 'Two players · same device', modeLocalD: 'Take turns on this screen',
     modeOvs: 'Online · compete', modeOvsD: 'Two devices, taking turns',
-    modeOcoop: 'Online · cooperate', modeOcoopD: 'Two devices, together against the clock',
+    modeOcoop: 'Online · cooperate', modeOcoopD: 'Two devices, taking turns, together against the clock',
     modeShortSolo: '1 player', modeShortLocal: '2 players', modeShortOvs: 'Online · compete', modeShortOcoop: 'Online · co-op',
     leaveGameConfirm: 'Leave this game? Your progress will be lost.',
     createRoom: 'Create room', orJoin: 'or join a room with its code', join: 'Join',
@@ -982,8 +980,6 @@ const UI = {
     lobbyModeVs: 'Compete · take turns', lobbyModeCoop: 'Cooperate · together',
     partnerLeft: n => `${n} left the room.`,
     turnOf: n => `${n}’s turn`, yourTurn: 'Your turn!',
-    coopFree: 'Anyone can flip a card',
-    coopHolding: n => `${n} is choosing…`, coopMine: 'Pick the second card',
     offline: n => `${n} disconnected. Waiting for them to come back…`,
     setScript: 'Characters', setLang: 'Language', setPhon: 'Pronunciation',
     phonNone: 'None', phonPinyin: 'Pinyin', phonZhuyin: 'Zhuyin', phonBoth: 'Both', zhOnly: 'Chinese only',
@@ -1019,7 +1015,7 @@ const UI = {
     modeSolo: '單人', modeSoloD: '自己玩，可進入排行榜',
     modeLocal: '雙人 · 同一台裝置', modeLocalD: '在這個畫面輪流玩',
     modeOvs: '連線 · 對戰', modeOvsD: '兩台裝置，輪流翻牌',
-    modeOcoop: '連線 · 合作', modeOcoopD: '兩台裝置，一起和時間賽跑',
+    modeOcoop: '連線 · 合作', modeOcoopD: '兩台裝置，輪流翻牌，一起和時間賽跑',
     modeShortSolo: '單人', modeShortLocal: '雙人 · 同台', modeShortOvs: '連線 · 對戰', modeShortOcoop: '連線 · 合作',
     leaveGameConfirm: '確定離開這局？目前的進度不會保留。',
     createRoom: '建立房間', orJoin: '或輸入房間代碼加入', join: '加入',
@@ -1037,8 +1033,6 @@ const UI = {
     lobbyModeVs: '對戰 · 輪流', lobbyModeCoop: '合作 · 一起',
     partnerLeft: n => `${n} 離開了房間。`,
     turnOf: n => `輪到 ${n}`, yourTurn: '輪到你了！',
-    coopFree: '任何人都可以翻牌',
-    coopHolding: n => `${n} 正在選牌…`, coopMine: '請選第二張牌',
     offline: n => `${n} 已斷線，等待他回來…`,
     setScript: '字體', setLang: '語言', setPhon: '拼音／注音', setRate: '語速',
     phonNone: '關閉', phonPinyin: '拼音', phonZhuyin: '注音', phonBoth: '兩者', zhOnly: '只有中文',
@@ -1968,8 +1962,7 @@ function applyFlip(s, i, who, type){
   if (s.open.length >= 2) return null;
   if (i < 0 || i >= s.deck.length) return null;
   if (s.matched[i] !== -1 || s.open.includes(i)) return null;
-  if (type === 'vs' && s.turn !== who) return null;
-  if (type === 'coop' && s.open.length === 1 && s.openBy !== who) return null;
+  if (s.turn !== who) return null;   // 對戰、合作都是輪流翻
 
   const n = {
     ...s,
@@ -1989,16 +1982,17 @@ function applyFlip(s, i, who, type){
       n.scores[who]++;
       n.open = [];
       n.openBy = -1;
+      if (type === 'coop') n.turn = 1 - who;   // 合作：每翻完一組就換人（兩人翻的次數一樣多）；對戰：配對成功可以再翻
       if (n.matched.every(x => x !== -1)) n.status = 'finished';
     }
   }
   return n;
 }
 
-/* 配錯的兩張蓋回去；對戰時換人 */
+/* 配錯的兩張蓋回去，換人（對戰、合作都一樣） */
 function applyCover(s, seq, type){
   if ((s.flipSeq || 0) !== seq || s.open.length !== 2) return null;
-  return { ...s, open: [], openBy: -1, turn: type === 'vs' ? 1 - s.turn : s.turn };
+  return { ...s, open: [], openBy: -1, turn: 1 - s.turn };
 }
 
 /* 依照狀態畫出牌面、玩家列、計時 */
@@ -2098,19 +2092,11 @@ function mpRenderBars(){
   const turnEl = $('mp-turn');
   let text = '', mine = false, active = -1;
   if (s.status === 'playing'){
-    if (MP.type === 'vs'){
-      active = s.turn;
-      if (MP.kind === 'online' && s.turn === MP.me){ text = t('yourTurn'); mine = true; }
-      else text = t('turnOf')(MP.names[s.turn]);
-    } else {
-      if (s.open.length === 1){
-        active = s.openBy;
-        if (s.openBy === MP.me){ text = t('coopMine'); mine = true; }
-        else text = t('coopHolding')(MP.names[s.openBy]);
-      } else text = t('coopFree');
-    }
+    active = s.turn;
+    if (MP.kind === 'online' && s.turn === MP.me){ text = t('yourTurn'); mine = true; }
+    else text = t('turnOf')(MP.names[s.turn]);
   }
-  if (active !== MP.lastActive && MP.lastActive !== undefined && active !== -1 && MP.type === 'vs') bumpChip(active);
+  if (active !== MP.lastActive && MP.lastActive !== undefined && active !== -1) bumpChip(active);
   MP.lastActive = active;
   $('pchip0').classList.toggle('active', active === 0);
   $('pchip1').classList.toggle('active', active === 1);
@@ -2118,7 +2104,7 @@ function mpRenderBars(){
   turnEl.classList.toggle('mine', mine);
 
   const waiting = MP.kind === 'online' && s.status === 'playing' &&
-    ((MP.type === 'vs' && s.turn !== MP.me) || (MP.type === 'coop' && s.open.length === 1 && s.openBy !== MP.me) || s.open.length === 2);
+    (s.turn !== MP.me || s.open.length === 2);
   document.body.classList.toggle('wait-turn', !!waiting);
 
   const notice = $('mp-notice');
@@ -2573,7 +2559,7 @@ async function onlineCover(seq){
       if ((d.flipSeq || 0) !== seq || !d.open || d.open.length !== 2) return;
       tx.update(MP.roomRef, {
         open: [], openBy: -1,
-        turn: d.mode === 'vs' ? 1 - d.turn : d.turn
+        turn: 1 - d.turn
       });
     });
   } catch(err){
