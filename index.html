@@ -48,6 +48,7 @@
     padding: 14px 16px 32px;
     margin: 0;
     min-height: 100vh;
+    min-height: 100dvh;
     letter-spacing: .02em;
   }
   h1, h2, h3{ margin: 0; font-weight: 500; }
@@ -1340,6 +1341,9 @@ function showScreen(which){
   gameScreen.style.display = which === 'game' ? 'block' : 'none';
   document.body.classList.toggle('in-game', which === 'game');
   fitLayout();
+  /* iPhone 版 Chrome：換畫面後頁面變短，但捲動位置沒回去，上方會被網址列蓋住 → 立刻、下一幀、稍後各捲回頂端一次 */
+  const toTop = () => { window.scrollTo(0, 0); document.documentElement.scrollTop = 0; document.body.scrollTop = 0; };
+  toTop(); requestAnimationFrame(toTop); setTimeout(toTop, 120); setTimeout(toTop, 400);
 }
 
 function setNameError(key, extra){
