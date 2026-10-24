@@ -43,3 +43,12 @@
 
 ## Firebase 規則
 `firestore-rules-full.txt` 是 memorma-24dab 的完整規則（Memorama 排行榜與房間、Ordena、色數消消樂）。
+
+## 手機瀏覽器備註：捲動後回不到頂端（2026-10-24）
+iPhone 版 Chrome 上，頁面可以捲動時，往下捲之後有時回不到最上面（Safari 正常）。
+處理方式（已套用在本遊戲）：
+- `<meta name="viewport">` 設 `maximum-scale=1`，不使用 `viewport-fit=cover`。
+- `<html>` 加 `html{color-scheme:light}`。
+- `body` 的 `min-height` 另加 `100dvh`；換畫面（輸入暱稱→進入遊戲等）時把頁面捲回頂端。
+
+手機 Chrome 測試恢復正常；尚未分開測是哪一項有效。新增頁面請照這個寫。
