@@ -234,7 +234,7 @@ service cloud.firestore {
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
-    // ---- 我要拿什麼？（關卡 1～9，各一個榜） ----
+    // ---- 我要放哪裡？（原名 我要拿什麼？；資料集名稱 homefetchmap_L1～L9 不變，關卡 1～9 各一個榜） ----
     match /{col}/{uid} {
       function g() { return request.resource.data; }
       function validHomeBoard() { return col.matches('^homefetchmap_L[1-9]$'); }
@@ -333,6 +333,63 @@ service cloud.firestore {
       allow update: if false;
       allow read, delete: if isAdmin();
     }
+
+
+    // ---- 造句小劇場：授權老師名單 ----
+    function sdOwner() {
+      return request.auth != null && request.auth.token.email_verified == true
+        && request.auth.token.email in ['a2224907@gmail.com'];
+    }
+    // 網頁用「讀得到這個不存在的文件」來確認登入的人是不是授權老師（不需要真的建立文件）
+    match /sentence_owner/{d} {
+      allow read: if sdOwner();
+    }
+
+    // 授權老師的雲端備份：設定、學生、常錯紀錄、自訂語法點（settings）和自己上傳的圖片（img_…），只有授權老師讀寫
+    match /sentence_owner_data/{d} {
+      allow read, write: if sdOwner();
+    }
+
+    // ---- 造句小劇場 連線房間 ----
+    match /sentence_rooms/{code} {
+      function r() { return request.resource.data; }
+      function old() { return resource.data; }
+      function reclaimable() { return old().expireAt < request.time; }
+      function okShape() {
+        return r().keys().hasOnly(['code','hostUid','mode','img','ia','inm','g','story','tm','seq','createdAt','expireAt'])
+          && r().mode in ['sentence','story']
+          && (r().img == null || (r().img is string && r().img.size() <= 20))
+          && (r().ia == null || (r().ia is string && r().ia.size() <= 400000))
+          && (r().inm == null || (r().inm is map && r().inm.tc is string && r().inm.tc.size() <= 60 && r().inm.sc is string && r().inm.sc.size() <= 60))
+          && (r().g == null || (r().g is map && r().g.tc is string && r().g.tc.size() <= 80
+                                && r().g.sc is string && r().g.sc.size() <= 80))
+          && (r().story == null || (r().story is map && r().story.tc is string && r().story.tc.size() <= 300
+                                    && r().story.sc is string && r().story.sc.size() <= 300))
+          && (r().tm == null || (r().tm is map && r().tm.k in ['d','u'] && r().tm.total is int && r().tm.total >= 0 && r().tm.total <= 3600
+                                 && r().tm.v is int && r().tm.v >= 0 && r().tm.v <= 3600 && r().tm.run is bool && r().tm.n is int))
+          && r().seq is int
+          && r().expireAt is timestamp
+          && r().expireAt <= request.time + duration.value(7, 'h');
+      }
+      function validNew() {
+        return code.matches('^[0-9]{4}$')
+          && r().code == code
+          && r().hostUid == request.auth.uid
+          && r().createdAt == request.time
+          && okShape();
+      }
+      function hostUpdate() {
+        return request.auth.uid == old().hostUid
+          && r().code == old().code && r().hostUid == old().hostUid
+          && r().createdAt == old().createdAt && r().expireAt == old().expireAt
+          && okShape();
+      }
+      allow read: if signedIn();
+      allow create: if signedIn() && sdOwner() && validNew();
+      allow update: if signedIn() && ((reclaimable() && sdOwner() && validNew()) || (!reclaimable() && hostUpdate()));
+      allow delete: if signedIn() && (reclaimable() || request.auth.uid == old().hostUid);
+    }
+
 
     // ---- 教師版（teachers / teacher_configs / shared_configs）已搬到 subscription-48d3c，此專案不再提供 ----
   }
