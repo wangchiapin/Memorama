@@ -234,7 +234,7 @@ service cloud.firestore {
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
-    // ---- 我要放哪裡？（原名 我要拿什麼？；資料集名稱 homefetchmap_L1～L9 不變，關卡 1～9 各一個榜） ----
+    // ---- 我要放哪裡？（原名 我要拿什麼？；資料集名稱 homefetchmap_L1～L9 不變；secs＝用時秒數，同分比時間，2026-10-25 加入） ----
     match /{col}/{uid} {
       function g() { return request.resource.data; }
       function validHomeBoard() { return col.matches('^homefetchmap_L[1-9]$'); }
@@ -291,6 +291,22 @@ service cloud.firestore {
       allow create: if signedIn() && request.auth.uid == uid && okPerrito();
       allow update: if signedIn() && request.auth.uid == uid && okPerrito()
                     && pd().rank > resource.data.rank;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
+    }
+
+    // ---- 吃字小精靈 Come Caracteres（2026-10-25 新增；單一榜，每台裝置只留一筆最好成績） ----
+    match /comeCaracteresLeaderboard/{uid} {
+      function cc() { return request.resource.data; }
+      function okCome() {
+        return cc().keys().hasOnly(['name','score','updatedAt'])
+          && cc().name is string && cc().name.size() >= 1 && cc().name.size() <= 14
+          && cc().score is int && cc().score >= 0 && cc().score <= 500000
+          && cc().updatedAt == request.time;
+      }
+      allow read: if true;
+      allow create: if signedIn() && request.auth.uid == uid && okCome();
+      allow update: if signedIn() && request.auth.uid == uid && okCome()
+                    && cc().score >= resource.data.score;
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
