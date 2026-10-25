@@ -239,7 +239,9 @@ service cloud.firestore {
       function g() { return request.resource.data; }
       function validHomeBoard() { return col.matches('^homefetchmap_L[1-9]$'); }
       function okHome() {
-        return g().keys().hasOnly(['name','score','listen','updatedAt'])
+        return g().keys().hasOnly(['name','score','listen','updatedAt','secs'])
+          && g().keys().hasAll(['name','score','listen','updatedAt'])
+          && (!('secs' in g().keys()) || (g().secs is int && g().secs >= 0 && g().secs <= 86400))
           && g().name is string && g().name.size() >= 1 && g().name.size() <= 14
           && g().score is int && g().score >= 0 && g().score <= 20000
           && g().listen is bool
