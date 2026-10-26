@@ -334,6 +334,78 @@ service cloud.firestore {
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
+    // ---- 別被雷劈到 連線房間（最多 15 人；房間 6 小時後過期；房主負責推進回合） ----
+    match /rayo_rooms/{code} {
+      function r() { return request.resource.data; }
+      function old() { return resource.data; }
+      function okName(n) { return n is string && n.size() >= 1 && n.size() <= 14; }
+      // 已過期或已關閉的房間，任何人都可以重新開一間同代碼的新房間，或把它刪掉
+      function reclaimable() { return old().expireAt < request.time || old().status == 'closed'; }
+      function okShape() {
+        return r().keys().hasOnly(['code','hostUid','hostName','level','status','ph','rd','n','qs','ro','elim','final','createdAt','expireAt'])
+          && r().keys().hasAll(['code','hostUid','hostName','level','status','ph','rd','n','qs','ro','elim','final','createdAt','expireAt'])
+          && okName(r().hostName)
+          && r().level in ['easy','normal','hard']
+          && r().status in ['waiting','playing','finished','closed']
+          && r().ph in ['','ready','ask','reveal','end']
+          && r().rd is int && r().rd >= 0 && r().rd <= 9
+          && r().n is int && r().n >= 0 && r().n <= 999
+          && r().qs is list && r().qs.size() <= 10
+          && r().ro is list && r().ro.size() <= 15
+          && r().elim is map && r().elim.size() <= 15
+          && r().final is list && r().final.size() <= 15
+          && r().createdAt is timestamp
+          && r().expireAt is timestamp
+          && r().expireAt <= request.time + duration.value(7, 'h');
+      }
+      function validNew() {
+        return code.matches('^[0-9]{4}$')
+          && r().code == code
+          && r().hostUid == request.auth.uid
+          && r().status == 'waiting' && r().ph == '' && r().rd == 0 && r().n == 0
+          && r().qs.size() == 0 && r().ro.size() == 0 && r().elim.size() == 0 && r().final.size() == 0
+          && r().createdAt == request.time
+          && okShape();
+      }
+      // 只有房主能改房間；房號、房主、建立與到期時間不能動；難度只能在「等人」時改
+      function hostUpdate() {
+        return request.auth.uid == old().hostUid
+          && r().code == old().code && r().hostUid == old().hostUid
+          && r().createdAt == old().createdAt && r().expireAt == old().expireAt
+          && (r().level == old().level || r().status == 'waiting')
+          && okShape();
+      }
+      allow read: if signedIn();
+      allow create: if signedIn() && validNew();
+      allow update: if signedIn() && ((reclaimable() && validNew()) || (!reclaimable() && hostUpdate()));
+      allow delete: if signedIn() && (reclaimable() || request.auth.uid == old().hostUid);
+
+      // 房間裡每個人一份：只有自己能寫自己的（暱稱、角色、答題結果 a：第幾題 → 1 對／0 錯）
+      match /players/{uid} {
+        function p() { return request.resource.data; }
+        function room() { return get(/databases/$(database)/documents/rayo_rooms/$(code)).data; }
+        function okPlayer() {
+          return p().keys().hasOnly(['name','g','ci','want','spec','a','joinedAt'])
+            && p().keys().hasAll(['name','g','ci','want','spec','a','joinedAt'])
+            && p().name is string && p().name.size() >= 1 && p().name.size() <= 14
+            && p().g in ['m','f']
+            && p().ci is int && p().ci >= 0 && p().ci <= 4
+            && p().want is bool && p().spec is bool
+            && p().a is map && p().a.size() <= 10;
+        }
+        allow read: if signedIn();
+        // 比賽開始後才進來的人只能當觀賽
+        allow create: if signedIn() && request.auth.uid == uid && okPlayer()
+          && p().joinedAt == request.time
+          && exists(/databases/$(database)/documents/rayo_rooms/$(code))
+          && room().status != 'closed' && room().expireAt > request.time
+          && (room().status == 'waiting' || p().spec == true);
+        allow update: if signedIn() && request.auth.uid == uid && okPlayer() && p().joinedAt == resource.data.joinedAt;
+        allow delete: if signedIn() && (request.auth.uid == uid
+          || (exists(/databases/$(database)/documents/rayo_rooms/$(code)) && request.auth.uid == room().hostUid));
+      }
+    }
+
     // ---- 遊玩紀錄（2026-10-21 新增；每局一筆，開始時建立、玩完時補上結果；後台「遊玩紀錄」分頁用） ----
     match /plays/{playId} {
       function pl() { return request.resource.data; }
