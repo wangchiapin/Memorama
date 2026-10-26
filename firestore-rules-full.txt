@@ -310,6 +310,30 @@ service cloud.firestore {
       allow delete: if isAdmin();   // 後台排行榜總覽可刪除
     }
 
+    // ---- 別被雷劈到 Cuidado con el rayo（2026-10-26 新增；簡單／普通／進階各一個榜，每台裝置每榜只留一筆最好成績） ----
+    // 排名 rank = (10 - 被雷劈次數) × 100000 + (99999 - 用時秒數)：越大越前面（被劈少的在前，一樣比時間）
+    // 一局固定 10 階、答對＋被劈＝10，所以只存被劈次數；用時最快的真實一局也要 30 秒以上，下限放 15 秒
+    match /rayo_boards/{board}/entries/{uid} {
+      function ry() { return request.resource.data; }
+      function okRayo() {
+        return board in ['easy','normal','hard']
+          && ry().keys().hasOnly(['name','strikes','secs','kb','rank','updatedAt'])
+          && ry().keys().hasAll(['name','strikes','secs','rank','updatedAt'])
+          && ry().name is string && ry().name.size() >= 1 && ry().name.size() <= 14
+          && ry().strikes is int && ry().strikes >= 0 && ry().strikes <= 10
+          && ry().secs is int && ry().secs >= 15 && ry().secs <= 3600
+          && (!('kb' in ry().keys()) || ry().kb in ['pinyin','zhuyin'])
+          && ry().rank is int
+          && ry().rank == (10 - ry().strikes) * 100000 + (99999 - ry().secs)
+          && ry().updatedAt == request.time;
+      }
+      allow read: if board in ['easy','normal','hard'];
+      allow create: if signedIn() && request.auth.uid == uid && okRayo();
+      allow update: if signedIn() && request.auth.uid == uid && okRayo()
+                    && ry().rank >= resource.data.rank;
+      allow delete: if isAdmin();   // 後台排行榜總覽可刪除
+    }
+
     // ---- 遊玩紀錄（2026-10-21 新增；每局一筆，開始時建立、玩完時補上結果；後台「遊玩紀錄」分頁用） ----
     match /plays/{playId} {
       function pl() { return request.resource.data; }
