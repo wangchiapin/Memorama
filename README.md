@@ -37,8 +37,19 @@
 - 單人分數存檔失敗會存在玩家瀏覽器，之後自動補送
 - GA4：`game_start`、`game_complete`（含 mode）、`room_create`、`room_join`、`leaderboard_view`
 
+## 詞庫（2026-10-27）
+- 目前 **96 個**物品詞，寫在 `index.html` 的 `vocab`（欄位：id、emoji、繁體、簡體、拼音、注音、西文、英文）。每局隨機抽 18 組（36 張牌）。
+- 編號是 1–100，但 **78 機車、86 地圖、87 悠遊卡、92 球 已刪除**（圖不合用），編號不補，所以中間有空號。程式用 id 找詞和圖，空號沒有影響。
+- 讀音以 game-kit 的 GoodTeacher 規則為準（`bank/gt/`）。這次對過，與規則不同、Ben 決定的寫法：
+  - 枕頭 zhěntóu（頭念 2 聲）、戒指 jièzhǐ（3 聲）。
+  - 鑰匙 yàoshi、掃把 sàobǎ 維持現在寫法（規則表沒有這兩個詞的設定）。
+  - 垃圾桶 lèsètǒng 維持教育部標準讀音。
+- 西文／英文：棉被 edredón／quilt、帽子 sombrero／hat、口罩 cubrebocas（拉丁美洲用法）、錢包 billetera（墨龍飛天用 cartera，兩邊不同是故意的）。
+- 新增詞時：在 `vocab` 加一筆、放對應圖片，注音的音節數要和字數一樣；多音字請對 game-kit 的 GoodTeacher 規則。
+
 ## 圖片
 `images/images{id}.webp`（300×300）。程式會依序找 `.webp` → `.png` → 顯示 emoji。
+51–100 的做法：白底攝影風、單一物品、無文字無人無手；Gemini 產生 2048×2048 後去背，縮到最長邊 252px、置中於 300×300 透明畫布，存 webp（品質 90）。
 
 
 ## Firebase 規則
