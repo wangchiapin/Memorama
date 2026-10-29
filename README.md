@@ -53,7 +53,12 @@
 
 
 ## Firebase 規則
-`firestore-rules-full.txt` 是 memorma-24dab 的完整規則（Memorama 排行榜與房間、Ordena、色數消消樂）。
+這個 repo 不放規則檔（舊的 `firestore-rules-full.txt` 已於 2026-10-29 刪除）。memorma-24dab 是很多遊戲共用的專案（Memorama、Ordena、色數消消樂、井遊戲、文字拼圖、幫媽媽買東西、把、被、問路小達人、我要放哪裡、墨龍飛天、小狗找寶藏、吃字小精靈、別被雷劈到、聲調偵探、遊玩紀錄 `plays`／`visits`、造句小劇場連線房間）。
+
+**規則正本在私人 repo `game-kit` 的 `firebase-rules/memorma-24dab.rules.txt`**（2026-10-29 已和 Firebase 現行規則逐行比對，完全一樣）。要改規則，先改那裡，再整份貼進 Firebase；不要貼各 repo 的舊副本。
+
+## 分享連結預覽（2026-10-28）
+把網址貼到 LINE、WhatsApp 時，會顯示遊戲名稱「翻牌記憶 · Memorama」和縮圖。縮圖是根目錄的 `og.jpg`（1200x630）；名稱與說明文字寫在 `index.html` `<head>` 的 `og:title`、`og:description`。
 
 ## 手機瀏覽器備註：捲動後回不到頂端（2026-10-24）
 iPhone 版 Chrome 上，頁面可以捲動時，往下捲之後有時回不到最上面（Safari 正常）。
