@@ -107,6 +107,16 @@
     padding: 36px 30px 32px;
   }
   .seal{ display:none; }
+  /* ---------- 中文＋外文：上面中文、下面小字外文 ---------- */
+  .bi-zh, .bi-fl{ display:block; }
+  .bi-fl{ font-size: .74em; font-weight: 400; letter-spacing: .02em; opacity: .75; margin-top: 2px; line-height: 1.25; }
+  .setting-label .bi-zh, .setting-label .bi-fl{ display:inline; }
+  .setting-label .bi-fl{ margin: 0 0 0 6px; font-size: 1em; opacity: .7; }
+  .seg button:has(.bi-fl), .mode-grid button:has(.bi-fl){ line-height: 1.25; }
+  #name-screen h2 .bi-fl{ color: var(--sub); margin-top: 6px; }
+  .mode-btn .mf{ display:block; font-size: 0.7rem; color: var(--sub); opacity: .8; margin-top: 3px; line-height: 1.3; }
+  .mode-btn .mf:empty{ display:none; }
+  #name-error{ white-space: pre-line; }
   #name-screen h2{ font-size: 1.05rem; letter-spacing: .08em; }
   #name-screen h2{ margin-bottom: 22px; }
   #name-screen .settings-block{ margin: 28px 0 22px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
@@ -708,22 +718,22 @@
 
 <!-- ================= 開始畫面 ================= -->
 <div id="name-screen">
-  <h2 data-i18n="nameTitle"></h2>
+  <h2 data-i18n="nameTitle" data-bi></h2>
   <input type="text" id="player-name" class="name-input" maxlength="14" autocomplete="nickname">
   <input type="text" id="player2-name" class="name-input" maxlength="14" autocomplete="off">
   <div id="name-error"></div>
-  <button class="btn" id="confirm-name-btn" data-i18n="enter"></button>
+  <button class="btn" id="confirm-name-btn" data-i18n="enter" data-bi></button>
   <div id="online-box">
-    <button class="btn" id="create-room-btn" data-i18n="createRoom"></button>
-    <div class="or-line" data-i18n="orJoin"></div>
+    <button class="btn" id="create-room-btn" data-i18n="createRoom" data-bi></button>
+    <div class="or-line" data-i18n="orJoin" data-bi></div>
     <div class="join-row">
       <input type="text" id="room-code-input" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="0000">
-      <button class="btn ghost" id="join-room-btn" data-i18n="join"></button>
+      <button class="btn ghost" id="join-room-btn" data-i18n="join" data-bi></button>
     </div>
   </div>
   <div class="settings-block" data-settings></div>
   <div class="setting-group mode-group">
-    <div class="setting-label" data-i18n="modeLabel"></div>
+    <div class="setting-label" data-i18n="modeLabel" data-bi></div>
     <div class="mode-list" id="mode-list"></div>
   </div>
 </div>
@@ -767,10 +777,10 @@
       <div id="voice-hint"><span class="hint-text" data-i18n="noVoice"></span><button class="hint-close" id="voice-hint-close" type="button" aria-label="close">✕</button></div>
       <div class="sidebar-divider"></div>
       <div class="bar-buttons">
-        <button class="btn" id="start-btn" data-i18n="restart"></button>
-        <button class="btn ghost" id="view-leaderboard-btn" data-i18n="ranking"></button>
-        <button class="btn ghost" id="leave-btn" data-i18n="leave"></button>
-        <button class="btn ghost" id="settings-toggle-btn" data-i18n="settings"></button>
+        <button class="btn" id="start-btn" data-i18n="restart" data-bi></button>
+        <button class="btn ghost" id="view-leaderboard-btn" data-i18n="ranking" data-bi></button>
+        <button class="btn ghost" id="leave-btn" data-i18n="leave" data-bi></button>
+        <button class="btn ghost" id="settings-toggle-btn" data-i18n="settings" data-bi></button>
       </div>
       <div class="sidebar-divider"></div>
       <div class="settings-block" data-settings></div>
@@ -1164,6 +1174,19 @@ function t(key){
     return out.replace(/\u0001(\d+)\u0002/g, (_, i) => args[+i]);
   };
 }
+/* 中文＋外文（開始頁、遊戲中的按鈕）：中文跟著字體選擇（繁／简），外文跟著語言選擇；選「只有中文」就只顯示中文 */
+function isBi(){ return settings.lang !== 'zh'; }
+function tz(key){ const v = UI.zh[key]; return settings.script === 'simp' ? uiToSimp(v) : v; }
+function tf(key){ return UI[settings.lang][key]; }
+function fillBi(el, key){
+  el.textContent = '';
+  if (!isBi()){ el.textContent = tz(key); return; }
+  const a = document.createElement('span'); a.className = 'bi-zh'; a.textContent = tz(key);
+  const b = document.createElement('span'); b.className = 'bi-fl'; b.textContent = tf(key);
+  el.append(a, b);
+}
+function biText(key){ return isBi() ? tz(key) + '\n' + tf(key) : tz(key); }
+function biInline(key){ return isBi() ? tz(key) + ' · ' + tf(key) : tz(key); }
 function hanzi(item){ return settings.script === 'trad' ? item.trad : item.simp; }
 const ONLYZH = () => settings.lang === 'zh';
 function phonetic(item){
@@ -1177,9 +1200,9 @@ function meaning(item){ return ONLYZH() ? '' : item[settings.lang]; }
 const SETTING_DEFS = [
   { key: 'script', label: 'setScript', options: [['trad', () => '繁體'], ['simp', () => '简体']] },
   { key: 'lang',   label: 'setLang',   options: [['es', () => '中文＋Español'], ['en', () => '中文＋English'], ['zh', () => UI.zh.zhOnly]] },
-  { key: 'phon',   label: 'setPhon',   options: [['pinyin', () => t('phonPinyin')], ['zhuyin', () => t('phonZhuyin')], ['both', () => t('phonBoth')], ['off', () => t('phonNone')]] },
-  { key: 'rate',   label: 'setRate',   options: [['slow', () => t('rateSlow')], ['normal', () => t('rateNormal')], ['fast', () => t('rateFast')]] },
-  { key: 'nums',   label: 'setNums',   options: [['off', () => t('no')], ['on', () => t('yes')]] }
+  { key: 'phon',   label: 'setPhon',   options: [['pinyin', () => t('phonPinyin'), 'phonPinyin'], ['zhuyin', () => t('phonZhuyin'), 'phonZhuyin'], ['both', () => t('phonBoth'), 'phonBoth'], ['off', () => t('phonNone'), 'phonNone']] },
+  { key: 'rate',   label: 'setRate',   options: [['slow', () => t('rateSlow'), 'rateSlow'], ['normal', () => t('rateNormal'), 'rateNormal'], ['fast', () => t('rateFast'), 'rateFast']] },
+  { key: 'nums',   label: 'setNums',   options: [['off', () => t('no'), 'no'], ['on', () => t('yes'), 'yes']] }
 ];
 
 function renderSettings(){
@@ -1190,13 +1213,13 @@ function renderSettings(){
       group.className = 'setting-group';
       const label = document.createElement('div');
       label.className = 'setting-label';
-      label.textContent = t(def.label);
+      fillBi(label, def.label);
       const seg = document.createElement('div');
       seg.className = 'seg';
-      def.options.forEach(([value, text]) => {
+      def.options.forEach(([value, text, key]) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.textContent = text();
+        if (key) fillBi(b, key); else b.textContent = text();
         if (settings[def.key] === value) b.classList.add('active');
         b.addEventListener('click', () => changeSetting(def.key, value));
         seg.appendChild(b);
@@ -1242,17 +1265,23 @@ function renderModes(){
     const b = document.createElement('button');
     b.type = 'button';
     b.className = 'mode-btn' + (selectedMode === id ? ' active' : '');
-    b.innerHTML = '<span class="dot"></span><span><span class="mt"></span><span class="md"></span></span>';
-    b.querySelector('.mt').textContent = t(title);
-    b.querySelector('.md').textContent = t(desc);
+    b.innerHTML = '<span class="dot"></span><span><span class="mt"></span><span class="md"></span><span class="mf"></span></span>';
+    if (isBi()){
+      b.querySelector('.mt').textContent = tz(title);
+      b.querySelector('.md').textContent = tz(desc);
+      b.querySelector('.mf').textContent = tf(title) + ' · ' + tf(desc);
+    } else {
+      b.querySelector('.mt').textContent = t(title);
+      b.querySelector('.md').textContent = t(desc);
+    }
     b.addEventListener('click', () => selectMode(id));
     list.appendChild(b);
   });
   document.body.classList.toggle('mode-local', selectedMode === 'local');
   document.body.classList.toggle('mode-online', selectedMode === 'ovs' || selectedMode === 'ocoop');
-  playerNameInput.placeholder = selectedMode === 'local' ? t('name1Ph') : t('namePh');
+  playerNameInput.placeholder = selectedMode === 'local' ? biInline('name1Ph') : biInline('namePh');
   playerNameInput.classList.toggle('p0-line', selectedMode === 'local');
-  $('player2-name').placeholder = t('name2Ph');
+  $('player2-name').placeholder = biInline('name2Ph');
 }
 /* 遊戲中的模式切換（右欄）：離開這局，回開始畫面並選好該模式 */
 const MODE_SHORT = { solo:'modeShortSolo', local:'modeShortLocal', ovs:'modeShortOvs', ocoop:'modeShortOcoop' };
@@ -1264,13 +1293,13 @@ function renderIngameModes(){
   group.className = 'setting-group';
   const label = document.createElement('div');
   label.className = 'setting-label';
-  label.textContent = t('modeLabel');
+  fillBi(label, 'modeLabel');
   const grid = document.createElement('div');
   grid.className = 'mode-grid';
   MODES.forEach(([id]) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.textContent = t(MODE_SHORT[id]);
+    fillBi(b, MODE_SHORT[id]);
     if (gameMode === id) b.classList.add('active');
     b.addEventListener('click', () => switchModeInGame(id));
     grid.appendChild(b);
@@ -1303,10 +1332,11 @@ function applyAll(){
   document.body.classList.toggle('show-nums', settings.nums === 'on');
   document.title = t('pageTitle');
   document.querySelectorAll('[data-i18n]').forEach(el => {
+    if (el.hasAttribute('data-bi')){ fillBi(el, el.dataset.i18n); return; }
     const val = t(el.dataset.i18n);
     if (typeof val === 'string') el.textContent = val;
   });
-  if (nameErrorKey) nameError.textContent = t(nameErrorKey);
+  if (nameErrorKey) nameError.textContent = biText(nameErrorKey);
   renderModes();
   renderIngameModes();
   renderSettings();
@@ -1406,7 +1436,7 @@ function showScreen(which){
 
 function setNameError(key, extra){
   nameErrorKey = extra ? '' : key;
-  nameError.textContent = extra ? extra : (key ? t(key) : '');
+  nameError.textContent = extra ? extra : (key ? biText(key) : '');
 }
 
 /* ---------- 圖片：先試 webp，再試 png，都沒有就顯示 emoji ---------- */

@@ -233,7 +233,7 @@ with sync_playwright() as p:
             btn = pg.inner_text('#confirm-name-btn')
             if key == 'lang':
                 if v == 'zh': R.check(not re.search('[A-Za-zÁÉÍÓÚñ]{3,}', btn), f'{label}：純中文按鈕「{btn}」')
-                else: R.check(btn == pg.evaluate("UI['%s'].enter" % v), f'{label}：按鈕「{btn}」')
+                else: R.check(btn.split('\n') == [pg.evaluate("UI.zh.enter"), pg.evaluate("UI['%s'].enter" % v)], f'{label}：按鈕上中文、下外文「{btn}」')
             solo_start(pg, 'Ana')
             info = pg.evaluate("""()=>{ const c=[...board.querySelectorAll('.card[data-type=text]')][0]; const it=vocabById[c.dataset.id];
               return { hz:c.querySelector('.hanzi').textContent, ph:c.querySelector('.phon').textContent, it:{trad:it.trad,simp:it.simp,pinyin:it.pinyin,zhuyin:it.zhuyin}, id:c.dataset.id }; }""")
