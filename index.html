@@ -3,6 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<script>
+/* iPhone 版 Chrome（CriOS）：重新載入後頁面最上面一小段會被網址列吃掉、滑不回去（Chrome 本身的問題，空白頁也會）。
+   只在這個瀏覽器讓 body 自己捲動、網頁本身不捲；其他瀏覽器維持原樣。代價：iPhone Chrome 下拉重新整理會失效，可用「⋯」選單的「重新載入」。 */
+(function(){
+  if (!/CriOS/.test(navigator.userAgent)) return;
+  document.documentElement.classList.add('crios');
+  window.scrollTo = function(x, y){
+    if (typeof x === 'object' && x){ y = x.top || 0; x = x.left || 0; }
+    document.body.scrollTo(x || 0, y || 0);
+  };
+})();
+</script>
+<style>
+html.crios, html.crios body{ height:100%; overflow:hidden; }
+html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-scrolling:touch; }
+</style>
 <link rel="icon" type="image/png" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
 <title>翻牌記憶 · Memorama</title>
