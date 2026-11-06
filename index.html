@@ -73,7 +73,7 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   h1, h2, h3{ margin: 0; font-weight: 500; }
 
   /* ---------- 標題：一行小字、字距拉開 ---------- */
-  .title-banner{ margin: 28px 0 22px; }
+  .title-banner{ margin: 18px 0 14px; position: relative; }
   .title-banner h1{
     font-size: 1.05rem;
     font-weight: 400;
@@ -120,7 +120,7 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
     background: var(--paper);
     border: 1px solid var(--line);
     border-radius: 2px;
-    padding: 36px 30px 32px;
+    padding: 20px 26px 20px;
   }
   .seal{ display:none; }
   /* ---------- 中文＋外文：上面中文、下面小字外文 ---------- */
@@ -130,16 +130,15 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   .setting-label .bi-fl{ margin: 0 0 0 6px; font-size: 1em; opacity: .7; }
   .seg button:has(.bi-fl), .mode-grid button:has(.bi-fl){ line-height: 1.25; }
   #name-screen h2 .bi-fl{ color: var(--sub); margin-top: 6px; }
-  .mode-btn .mf{ display:block; font-size: 0.7rem; color: var(--sub); opacity: .8; margin-top: 3px; line-height: 1.3; }
-  .mode-btn .mf:empty{ display:none; }
   #name-error{ white-space: pre-line; }
   #name-screen h2{ font-size: 1.05rem; letter-spacing: .08em; }
-  #name-screen h2{ margin-bottom: 22px; }
+  #name-screen h2{ margin-bottom: 24px; }
   #name-screen{ position: relative; }
-  #name-screen .mode-group{ margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+  #name-screen .mode-group{ margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--line-soft); }
   /* ---------- 設定／說明圖示（細線條，不用 emoji） ---------- */
   .icon-row{ display:flex; gap: 8px; justify-content:flex-end; }
-  #name-screen > .icon-row{ position:absolute; top: 12px; right: 12px; }
+  .title-banner .icon-row{ position:absolute; right: 0; top: 50%; transform: translateY(-50%); }
+  body.in-game .title-banner .icon-row{ display:none; }
   .icon-btn{
     width: 38px; height: 38px; padding: 0;
     display:inline-flex; align-items:center; justify-content:center;
@@ -148,6 +147,7 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
     transition: background .2s, color .2s;
   }
   .icon-btn:hover{ background: var(--accent-soft); color: var(--ink); }
+  .title-banner .icon-btn{ width: 34px; height: 34px; }
   .icon-btn svg{ width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
   .sidebar-col .icon-row{ justify-content:center; }
   .info-box{ max-width: 440px; text-align: left; }
@@ -191,8 +191,9 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   .btn.ghost{ background: transparent; color: var(--ink); border-color: var(--line); }
   .btn.ghost:hover{ background: var(--accent-soft); opacity: 1; }
 
-  #name-screen .btn{ margin-top: 22px; width: 100%; }
-  #name-error{ color: var(--accent-text); font-size: 0.8rem; min-height: 18px; margin-top: 8px; }
+  #name-screen .btn{ margin-top: 12px; width: 100%; }
+  #name-error{ color: var(--accent-text); font-size: 0.8rem; min-height: 0; margin-top: 6px; }
+  #name-error:empty{ margin-top: 0; }
 
   /* ================= 遊戲畫面（寬螢幕：三欄） ================= */
   #game-screen{ display:none; }
@@ -566,32 +567,7 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
     --p1: #6F8796;          /* 玩家 2：灰藍 */
     --p1-soft: #E3E9EC;
   }
-  .mode-group{ margin: 0 0 18px; }
-  .mode-list{ display:flex; flex-direction:column; border:1px solid var(--line); border-radius:2px; background: var(--paper); }
-  .mode-btn{
-    font-family: inherit;
-    text-align: left;
-    background: transparent;
-    border: 0;
-    border-top: 1px solid var(--line-soft);
-    padding: 10px 12px;
-    cursor: pointer;
-    color: var(--ink);
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  .mode-btn:first-child{ border-top: 0; }
-  .mode-btn .dot{
-    width: 14px; height: 14px; border-radius: 50%;
-    border: 1px solid var(--line);
-    flex-shrink: 0;
-    background: var(--paper);
-  }
-  .mode-btn.active{ background: var(--accent-soft); }
-  .mode-btn.active .dot{ border-color: var(--accent); box-shadow: inset 0 0 0 3px var(--paper); background: var(--accent); }
-  .mode-btn .mt{ display:block; font-size: 0.88rem; font-weight: 500; }
-  .mode-btn .md{ display:block; font-size: 0.72rem; color: var(--sub); margin-top: 2px; }
+  .mode-group{ margin: 0 0 12px; }
 
   .name-input{
     width: 100%;
@@ -712,8 +688,6 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   body.wait-turn .card{ cursor: default; }
   body.wait-turn .card:hover .card-front{ background-color: var(--card-back); }
 
-  #leave-btn{ display:none; }
-  body.mp #leave-btn{ display:block; }
   body.online #start-btn{ display:none; }
   body.mp #view-leaderboard-btn{ display:none; }
   body.mp .player-chip{ display:none; }
@@ -746,14 +720,13 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   <span class="marquee-text" id="marquee-text"></span>
 </div>
 
-<div class="title-banner"><h1>Memorama</h1></div>
+<div class="title-banner"><h1>Memorama</h1><div class="icon-row">
+      <button type="button" class="icon-btn" data-open="settings-modal" id="settings-btn-start" aria-label="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button type="button" class="icon-btn" data-open="help-modal" id="help-btn-start" aria-label="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17.2" r=".6"/></svg></button>
+    </div></div>
 
 <!-- ================= 開始畫面 ================= -->
 <div id="name-screen">
-  <div class="icon-row">
-      <button type="button" class="icon-btn" data-open="settings-modal" id="settings-btn-start" aria-label="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
-      <button type="button" class="icon-btn" data-open="help-modal" id="help-btn-start" aria-label="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17.2" r=".6"/></svg></button>
-    </div>
   <h2 data-i18n="nameTitle" data-bi></h2>
   <input type="text" id="player-name" class="name-input" maxlength="14" autocomplete="nickname">
   <input type="text" id="player2-name" class="name-input" maxlength="14" autocomplete="off">
@@ -769,7 +742,7 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   </div>
   <div class="setting-group mode-group">
     <div class="setting-label" data-i18n="modeLabel" data-bi></div>
-    <div class="mode-list" id="mode-list"></div>
+    <div class="mode-grid" id="mode-list"></div>
   </div>
 </div>
 
@@ -814,14 +787,12 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
       <div class="bar-buttons">
         <button class="btn" id="start-btn" data-i18n="restart" data-bi></button>
         <button class="btn ghost" id="view-leaderboard-btn" data-i18n="ranking" data-bi></button>
-        <button class="btn ghost" id="leave-btn" data-i18n="leave" data-bi></button>
+        <button class="btn ghost" id="leave-btn" data-i18n="mainMenu" data-bi></button>
         <div class="icon-row">
       <button type="button" class="icon-btn" data-open="settings-modal" id="settings-btn-game" aria-label="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
       <button type="button" class="icon-btn" data-open="help-modal" id="help-btn-game" aria-label="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17.2" r=".6"/></svg></button>
     </div>
       </div>
-      <div class="sidebar-divider"></div>
-      <div class="settings-block" id="ingame-modes"></div>
     </aside>
 
     <aside class="log-col panel" id="log-col">
@@ -1024,6 +995,7 @@ const vocabById = Object.fromEntries(vocab.map(v => [v.id, v]));
 const UI = {
   es: {
     help: 'Cómo jugar',
+    mainMenu: 'Menú principal',
     helpGoalH: 'Objetivo',
     helpGoal1: 'Hay 36 cartas boca abajo: 18 parejas. Cada pareja es una carta con el texto en chino y una carta con su imagen.',
     helpGoal2: 'Encuentra todas las parejas con los menos intentos y el menor tiempo posible.',
@@ -1092,6 +1064,7 @@ const UI = {
   },
   en: {
     help: 'How to play',
+    mainMenu: 'Main menu',
     helpGoalH: 'Goal',
     helpGoal1: 'There are 36 face-down cards: 18 pairs. Each pair is one card with the Chinese text and one card with its picture.',
     helpGoal2: 'Find all the pairs using as few tries and as little time as you can.',
@@ -1160,6 +1133,7 @@ const UI = {
   }
   ,zh: {
     help: '遊戲說明',
+    mainMenu: '主選單',
     helpGoalH: '目標',
     helpGoal1: '桌上有 36 張牌蓋著，一共 18 組。每一組是一張中文字卡，加上一張對應的圖片卡。',
     helpGoal2: '用最少的次數、最短的時間，把所有牌配對完。',
@@ -1265,7 +1239,7 @@ function saveSettings(){
 }
 if (readSettings()) saveSettings();
 /* 「只有中文」的介面文字是繁體字；選簡體時轉成簡體（只轉介面固定文字，玩家名字不轉） */
-const UI_T2S_FROM = '來個們兩動勝單嗎圖夥對幫後憶戰戲數斷時會檢沒滿灣無獲現畫當發確碼紀結給統網線績聽裝裡製複記設試語請賽載輪輸這連進遊還錄閉開間關險雙離顯體傳張敗標樣組蓋規則詞話說錯麼點應換唸', UI_T2S_TO = '来个们两动胜单吗图伙对帮后忆战戏数断时会检没满湾无获现画当发确码纪结给统网线绩听装里制复记设试语请赛载轮输这连进游还录闭开间关险双离显体传张败标样组盖规则词话说错么点应换念';
+const UI_T2S_FROM = '來個們兩動勝單嗎圖夥對幫後憶戰戲數斷時會檢沒滿灣無獲現畫當發確碼紀結給統網線績聽裝裡製複記設試語請賽載輪輸這連進遊還錄閉開間關險雙離顯體傳張敗標樣組蓋規則詞話說錯麼點應換唸選', UI_T2S_TO = '来个们两动胜单吗图伙对帮后忆战戏数断时会检没满湾无获现画当发确码纪结给统网线绩听装里制复记设试语请赛载轮输这连进游还录闭开间关险双离显体传张败标样组盖规则词话说错么点应换念选';
 function uiToSimp(str){ return String(str).replace(/[\u4e00-\u9fff]/g, c => { const i = UI_T2S_FROM.indexOf(c); return i < 0 ? c : UI_T2S_TO[i]; }); }
 function t(key){
   const v = UI[settings.lang][key];
@@ -1378,19 +1352,11 @@ try {
 function renderModes(){
   const list = $('mode-list');
   list.innerHTML = '';
-  MODES.forEach(([id, title, desc]) => {
+  MODES.forEach(([id]) => {
     const b = document.createElement('button');
     b.type = 'button';
-    b.className = 'mode-btn' + (selectedMode === id ? ' active' : '');
-    b.innerHTML = '<span class="dot"></span><span><span class="mt"></span><span class="md"></span><span class="mf"></span></span>';
-    if (isBi()){
-      b.querySelector('.mt').textContent = tz(title);
-      b.querySelector('.md').textContent = tz(desc);
-      b.querySelector('.mf').textContent = tf(title) + ' · ' + tf(desc);
-    } else {
-      b.querySelector('.mt').textContent = t(title);
-      b.querySelector('.md').textContent = t(desc);
-    }
+    fillBi(b, MODE_SHORT[id]);
+    if (selectedMode === id) b.classList.add('active');
     b.addEventListener('click', () => selectMode(id));
     list.appendChild(b);
   });
@@ -1400,42 +1366,12 @@ function renderModes(){
   playerNameInput.classList.toggle('p0-line', selectedMode === 'local');
   $('player2-name').placeholder = biInline('name2Ph');
 }
-/* 遊戲中的模式切換（右欄）：離開這局，回開始畫面並選好該模式 */
 const MODE_SHORT = { solo:'modeShortSolo', local:'modeShortLocal', ovs:'modeShortOvs', ocoop:'modeShortOcoop' };
-function renderIngameModes(){
-  const box = $('ingame-modes');
-  if (!box) return;
-  box.innerHTML = '';
-  const group = document.createElement('div');
-  group.className = 'setting-group';
-  const label = document.createElement('div');
-  label.className = 'setting-label';
-  fillBi(label, 'modeLabel');
-  const grid = document.createElement('div');
-  grid.className = 'mode-grid';
-  MODES.forEach(([id]) => {
-    const b = document.createElement('button');
-    b.type = 'button';
-    fillBi(b, MODE_SHORT[id]);
-    if (gameMode === id) b.classList.add('active');
-    b.addEventListener('click', () => switchModeInGame(id));
-    grid.appendChild(b);
-  });
-  group.append(label, grid);
-  box.appendChild(group);
-}
 function gameHasProgress(){
   if (gameMode === 'solo') return isPlaying && (moves > 0 || flippedCards.length > 0);
   const st = MP.s;
   return !!(st && st.status === 'playing' && ((st.moves || 0) > 0 || (st.open && st.open.length > 0)));
 }
-async function switchModeInGame(id){
-  if (id === gameMode) return;
-  if (gameHasProgress() && !window.confirm(t('leaveGameConfirm'))) return;
-  if (MP.kind === 'online') await leaveRoom(); else exitToMenu('');
-  selectMode(id);
-}
-
 function selectMode(id){
   selectedMode = id;
   try { localStorage.setItem('memorama_mode', id); } catch(e){}
@@ -1455,7 +1391,6 @@ function applyAll(){
   });
   if (nameErrorKey) nameError.textContent = biText(nameErrorKey);
   renderModes();
-  renderIngameModes();
   renderSettings();
   renderHelp();
   refreshCardTexts();
@@ -1756,7 +1691,6 @@ function setBodyMode(){
   document.body.classList.toggle('versus', gameMode === 'local' || gameMode === 'ovs');
   document.body.classList.toggle('coop', gameMode === 'ocoop');
   if (!mp) document.body.classList.remove('wait-turn');
-  renderIngameModes();
   fitLayout();
 }
 
@@ -2848,6 +2782,7 @@ $('start-btn').addEventListener('click', () => {
   else startGame();
 });
 $('leave-btn').addEventListener('click', () => {
+  if (gameHasProgress() && !window.confirm(t('leaveGameConfirm'))) return;
   if (MP.kind === 'online') leaveRoom();
   else exitToMenu('');
 });
