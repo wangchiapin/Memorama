@@ -1024,6 +1024,7 @@ const UI = {
     modeOcoop: 'En línea · cooperar', modeOcoopD: 'Dos dispositivos, por turnos, juntos contra el reloj',
     modeShortSolo: '1 jugador', modeShortLocal: '2 jugadores', modeShortOvs: 'En línea · competir', modeShortOcoop: 'En línea · cooperar',
     leaveGameConfirm: '¿Salir de esta partida? Se perderá el progreso.',
+    restartConfirm: '¿Reiniciar la partida? Se perderá el progreso.',
     createRoom: 'Crear sala', orJoin: 'o únete a una sala con su código', join: 'Unirse',
     codeErr: 'Escribe el código de 4 números.',
     roomNotFound: 'No existe esa sala o ya terminó.',
@@ -1093,6 +1094,7 @@ const UI = {
     modeOcoop: 'Online · cooperate', modeOcoopD: 'Two devices, taking turns, together against the clock',
     modeShortSolo: '1 player', modeShortLocal: '2 players', modeShortOvs: 'Online · compete', modeShortOcoop: 'Online · co-op',
     leaveGameConfirm: 'Leave this game? Your progress will be lost.',
+    restartConfirm: 'Restart the game? Your progress will be lost.',
     createRoom: 'Create room', orJoin: 'or join a room with its code', join: 'Join',
     codeErr: 'Enter the 4-digit code.',
     roomNotFound: 'That room does not exist or has ended.',
@@ -1162,6 +1164,7 @@ const UI = {
     modeOcoop: '連線 · 合作', modeOcoopD: '兩台裝置，輪流翻牌，一起和時間賽跑',
     modeShortSolo: '單人', modeShortLocal: '雙人 · 同台', modeShortOvs: '連線 · 對戰', modeShortOcoop: '連線 · 合作',
     leaveGameConfirm: '確定離開這局？目前的進度不會保留。',
+    restartConfirm: '確定重新開始？目前的進度不會保留。',
     createRoom: '建立房間', orJoin: '或輸入房間代碼加入', join: '加入',
     codeErr: '請輸入 4 位數字代碼。',
     roomNotFound: '找不到這個房間，或遊戲已結束。',
@@ -2778,11 +2781,12 @@ $('copy-link-btn').addEventListener('click', async () => {
 
 /* ---------- 按鈕 ---------- */
 $('start-btn').addEventListener('click', () => {
+  if (gameHasProgress() && !window.confirm(biText('restartConfirm'))) return;
   if (gameMode === 'local') startLocalGame();
   else startGame();
 });
 $('leave-btn').addEventListener('click', () => {
-  if (gameHasProgress() && !window.confirm(t('leaveGameConfirm'))) return;
+  if (gameHasProgress() && !window.confirm(biText('leaveGameConfirm'))) return;
   if (MP.kind === 'online') leaveRoom();
   else exitToMenu('');
 });
