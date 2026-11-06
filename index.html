@@ -135,7 +135,28 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   #name-error{ white-space: pre-line; }
   #name-screen h2{ font-size: 1.05rem; letter-spacing: .08em; }
   #name-screen h2{ margin-bottom: 22px; }
-  #name-screen .settings-block{ margin: 28px 0 22px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+  #name-screen{ position: relative; }
+  #name-screen .mode-group{ margin-top: 28px; padding-top: 24px; border-top: 1px solid var(--line-soft); }
+  /* ---------- 設定／說明圖示（細線條，不用 emoji） ---------- */
+  .icon-row{ display:flex; gap: 8px; justify-content:flex-end; }
+  #name-screen > .icon-row{ position:absolute; top: 12px; right: 12px; }
+  .icon-btn{
+    width: 38px; height: 38px; padding: 0;
+    display:inline-flex; align-items:center; justify-content:center;
+    border: 1px solid var(--line); border-radius: 2px;
+    background: var(--paper); color: var(--sub); cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+  .icon-btn:hover{ background: var(--accent-soft); color: var(--ink); }
+  .icon-btn svg{ width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .sidebar-col .icon-row{ justify-content:center; }
+  .info-box{ max-width: 440px; text-align: left; }
+  .info-box h2{ text-align:center; margin-bottom: 18px; }
+  .info-box .settings-block{ gap: 16px; }
+  .help-sec{ margin: 0 0 16px; }
+  .help-sec h3{ font-size: 0.86rem; letter-spacing: .08em; color: var(--accent-text); margin-bottom: 6px; }
+  .help-sec p{ margin: 0 0 8px; font-size: 0.84rem; line-height: 1.7; color: var(--ink); }
+  .help-sec p .bi-fl{ margin-top: 1px; }
   #player-name{
     width: 100%;
     padding: 11px 14px;
@@ -241,13 +262,9 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
   .mode-grid button.active{ background: var(--accent-soft); color: var(--ink); font-weight: 500; }
   .sidebar-col.compact .mode-grid button{ min-height: 34px; padding: 3px 2px; }
   .sidebar-col.compact{ gap: 10px; padding: 16px 18px 16px; }
-  .sidebar-col.compact .settings-block{ gap: 8px; }
-  .sidebar-col.compact .setting-group{ gap: 4px; }
-  .sidebar-col.compact .seg button{ min-height: 32px; padding: 3px 2px; }
   .sidebar-col.compact .bar-buttons{ gap: 6px; }
   .sidebar-col.compact .stats{ gap: 6px; }
   .bar-buttons{ display:flex; flex-direction:column; gap: 10px; }
-  #settings-toggle-btn{ display:none; }
   #voice-hint{
     display:none;
     font-size: 0.74rem;
@@ -285,9 +302,8 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
     .stats{ flex-direction: row; justify-content: space-around; gap: 6px; }
     .bar-buttons{ flex-direction: row; gap: 8px; }
     .bar-buttons .btn{ flex: 1; padding: 7px 4px; font-size: 0.8rem; letter-spacing: .06em; }
-    #settings-toggle-btn{ display:block; }
-    .sidebar-col .settings-block{ display:none; padding: 4px 2px 6px; }
-    .sidebar-col.open .settings-block{ display:flex; }
+    .bar-buttons .icon-row{ flex: none; }
+    .bar-buttons .icon-btn{ width: 36px; height: 100%; min-height: 34px; }
     #voice-hint{ font-size: 0.7rem; padding: 6px 8px; line-height: 1.45; }
     .board-col{ order: 2; flex: none; }
     .last-flip{
@@ -734,6 +750,10 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
 
 <!-- ================= 開始畫面 ================= -->
 <div id="name-screen">
+  <div class="icon-row">
+      <button type="button" class="icon-btn" data-open="settings-modal" id="settings-btn-start" aria-label="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button type="button" class="icon-btn" data-open="help-modal" id="help-btn-start" aria-label="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17.2" r=".6"/></svg></button>
+    </div>
   <h2 data-i18n="nameTitle" data-bi></h2>
   <input type="text" id="player-name" class="name-input" maxlength="14" autocomplete="nickname">
   <input type="text" id="player2-name" class="name-input" maxlength="14" autocomplete="off">
@@ -747,7 +767,6 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
       <button class="btn ghost" id="join-room-btn" data-i18n="join" data-bi></button>
     </div>
   </div>
-  <div class="settings-block" data-settings></div>
   <div class="setting-group mode-group">
     <div class="setting-label" data-i18n="modeLabel" data-bi></div>
     <div class="mode-list" id="mode-list"></div>
@@ -796,10 +815,12 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
         <button class="btn" id="start-btn" data-i18n="restart" data-bi></button>
         <button class="btn ghost" id="view-leaderboard-btn" data-i18n="ranking" data-bi></button>
         <button class="btn ghost" id="leave-btn" data-i18n="leave" data-bi></button>
-        <button class="btn ghost" id="settings-toggle-btn" data-i18n="settings" data-bi></button>
+        <div class="icon-row">
+      <button type="button" class="icon-btn" data-open="settings-modal" id="settings-btn-game" aria-label="settings"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
+      <button type="button" class="icon-btn" data-open="help-modal" id="help-btn-game" aria-label="help"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.2a2.6 2.6 0 0 1 5 .9c0 1.7-2.5 2.2-2.5 3.9"/><circle cx="12" cy="17.2" r=".6"/></svg></button>
+    </div>
       </div>
       <div class="sidebar-divider"></div>
-      <div class="settings-block" data-settings></div>
       <div class="settings-block" id="ingame-modes"></div>
     </aside>
 
@@ -807,6 +828,26 @@ html.crios body{ height:100dvh; min-height:0; overflow-y:auto; -webkit-overflow-
       <h3 id="log-title" data-i18n="logTitle"></h3>
       <ul class="log-list" id="log-list"></ul>
     </aside>
+  </div>
+</div>
+
+<!-- ================= 設定／說明 Modal ================= -->
+<div class="modal-overlay" id="settings-modal">
+  <div class="modal-box info-box">
+    <h2 data-i18n="settings" data-bi></h2>
+    <div class="settings-block" data-settings></div>
+    <div class="modal-btn-row">
+      <button class="btn ghost" data-close="settings-modal" data-i18n="close" data-bi></button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="help-modal">
+  <div class="modal-box info-box">
+    <h2 data-i18n="help" data-bi></h2>
+    <div id="help-body"></div>
+    <div class="modal-btn-row">
+      <button class="btn ghost" data-close="help-modal" data-i18n="close" data-bi></button>
+    </div>
   </div>
 </div>
 
@@ -982,6 +1023,21 @@ const vocabById = Object.fromEntries(vocab.map(v => [v.id, v]));
    ========================================================= */
 const UI = {
   es: {
+    help: 'Cómo jugar',
+    helpGoalH: 'Objetivo',
+    helpGoal1: 'Hay 36 cartas boca abajo: 18 parejas. Cada pareja es una carta con el texto en chino y una carta con su imagen.',
+    helpGoal2: 'Encuentra todas las parejas con los menos intentos y el menor tiempo posible.',
+    helpHowH: 'Cómo se juega',
+    helpHow1: 'Toca una carta para voltearla y escucha cómo se dice en chino. Luego toca otra carta.',
+    helpHow2: 'Si el texto y la imagen son de la misma palabra, la pareja se queda abierta. Si no, las cartas se vuelven a tapar.',
+    helpHow3: 'Recuerda dónde está cada carta para acertar más rápido. En Ajustes puedes cambiar los caracteres, el idioma, la pronunciación y la velocidad de voz.',
+    helpModesH: 'Modos de juego',
+    helpMode1: 'Un jugador: juegas solo y tu puntaje entra al ranking.',
+    helpMode2: 'Dos jugadores · mismo dispositivo: se turnan en la misma pantalla. Quien acierta una pareja suma 1 y vuelve a jugar; si falla, cambia el turno. No entra al ranking.',
+    helpMode3: 'En línea · competir: dos dispositivos, mismas reglas que el modo anterior. Crea una sala y comparte el código de 4 números o el enlace.',
+    helpMode4: 'En línea · cooperar: dos dispositivos, juegan juntos contra el reloj. Después de cada intento, acierten o no, cambia el turno. Comparten el tiempo y los intentos.',
+    helpScoreH: 'Puntaje',
+    helpScore1: 'En el modo de un jugador, menos intentos y menos tiempo dan más puntos.',
     pageTitle: 'Memorama: Empareja objetos cotidianos en chino',
     nameTitle: 'Comienza tu aventura de memoria',
     namePh: 'Escribe tu nombre',
@@ -1035,6 +1091,21 @@ const UI = {
     noVoice: 'Tu dispositivo no tiene voz en chino, por eso no se escucha la pronunciación. Puedes instalar una voz de chino (Taiwán) en los ajustes de idioma o de voz de tu sistema.'
   },
   en: {
+    help: 'How to play',
+    helpGoalH: 'Goal',
+    helpGoal1: 'There are 36 face-down cards: 18 pairs. Each pair is one card with the Chinese text and one card with its picture.',
+    helpGoal2: 'Find all the pairs using as few tries and as little time as you can.',
+    helpHowH: 'How to play',
+    helpHow1: 'Tap a card to flip it and hear how it is said in Chinese. Then tap another card.',
+    helpHow2: 'If the text and the picture are the same word, the pair stays open. If not, both cards turn back over.',
+    helpHow3: 'Remember where each card is so you can match faster. In Settings you can change the characters, language, pronunciation and voice speed.',
+    helpModesH: 'Game modes',
+    helpMode1: 'One player: play alone and your score goes to the ranking.',
+    helpMode2: 'Two players · same device: take turns on the same screen. Whoever matches a pair scores 1 and plays again; if you miss, the turn changes. Not in the ranking.',
+    helpMode3: 'Online · compete: two devices, same rules as above. Create a room and share the 4-digit code or the link.',
+    helpMode4: 'Online · cooperate: two devices, playing together against the clock. After every try, hit or miss, the turn changes. You share the time and the tries.',
+    helpScoreH: 'Score',
+    helpScore1: 'In one-player mode, fewer tries and less time give more points.',
     pageTitle: 'Memorama: Match everyday objects in Chinese',
     nameTitle: 'Start your memory adventure',
     namePh: 'Your name',
@@ -1088,6 +1159,21 @@ const UI = {
     noVoice: "Your device has no Chinese voice, so you won't hear the pronunciation. You can install a Chinese (Taiwan) voice in your system's language or speech settings."
   }
   ,zh: {
+    help: '遊戲說明',
+    helpGoalH: '目標',
+    helpGoal1: '桌上有 36 張牌蓋著，一共 18 組。每一組是一張中文字卡，加上一張對應的圖片卡。',
+    helpGoal2: '用最少的次數、最短的時間，把所有牌配對完。',
+    helpHowH: '怎麼玩',
+    helpHow1: '點一張牌翻開，會唸出中文。再點另一張牌。',
+    helpHow2: '字卡和圖片是同一個詞，這一組就留在桌上；不是的話，兩張牌會蓋回去。',
+    helpHow3: '記住每張牌的位置，配對會更快。在「設定」可以改字體、語言、拼音／注音和語速。',
+    helpModesH: '遊戲模式',
+    helpMode1: '單人：自己玩，成績可以進排行榜。',
+    helpMode2: '雙人 · 同一台裝置：在同一個畫面輪流翻牌。配對成功的人得 1 分，可以再翻一次；配錯就換人。不進排行榜。',
+    helpMode3: '連線 · 對戰：兩台裝置，規則和上面一樣。建立房間後，把 4 位數代碼或連結傳給對方。',
+    helpMode4: '連線 · 合作：兩台裝置一起和時間賽跑。每翻完一組，不管配對成功或失敗，都換人。兩個人共用時間和次數。',
+    helpScoreH: '成績',
+    helpScore1: '單人模式：次數越少、時間越短，分數越高。',
     pageTitle: '翻牌記憶：配對生活用品',
     nameTitle: '開始你的記憶冒險',
     namePh: '輸入你的名字',
@@ -1179,7 +1265,7 @@ function saveSettings(){
 }
 if (readSettings()) saveSettings();
 /* 「只有中文」的介面文字是繁體字；選簡體時轉成簡體（只轉介面固定文字，玩家名字不轉） */
-const UI_T2S_FROM = '來個們兩動勝單嗎圖夥對幫後憶戰戲數斷時會檢沒滿灣無獲現畫當發確碼紀結給統網線績聽裝裡製複記設試語請賽載輪輸這連進遊還錄閉開間關險雙離顯體', UI_T2S_TO = '来个们两动胜单吗图伙对帮后忆战戏数断时会检没满湾无获现画当发确码纪结给统网线绩听装里制复记设试语请赛载轮输这连进游还录闭开间关险双离显体';
+const UI_T2S_FROM = '來個們兩動勝單嗎圖夥對幫後憶戰戲數斷時會檢沒滿灣無獲現畫當發確碼紀結給統網線績聽裝裡製複記設試語請賽載輪輸這連進遊還錄閉開間關險雙離顯體傳張敗標樣組蓋規則詞話說錯麼點應換唸', UI_T2S_TO = '来个们两动胜单吗图伙对帮后忆战戏数断时会检没满湾无获现画当发确码纪结给统网线绩听装里制复记设试语请赛载轮输这连进游还录闭开间关险双离显体传张败标样组盖规则词话说错么点应换念';
 function uiToSimp(str){ return String(str).replace(/[\u4e00-\u9fff]/g, c => { const i = UI_T2S_FROM.indexOf(c); return i < 0 ? c : UI_T2S_TO[i]; }); }
 function t(key){
   const v = UI[settings.lang][key];
@@ -1243,6 +1329,21 @@ function renderSettings(){
       group.append(label, seg);
       container.appendChild(group);
     });
+  });
+}
+
+/* 遊戲說明：標題與段落都用「中文在上、外文在下」（fillBi）；選「只有中文」就只顯示中文 */
+const HELP_SECS = [['helpGoalH', ['helpGoal1', 'helpGoal2']], ['helpHowH', ['helpHow1', 'helpHow2', 'helpHow3']], ['helpModesH', ['helpMode1', 'helpMode2', 'helpMode3', 'helpMode4']], ['helpScoreH', ['helpScore1']]];
+function renderHelp(){
+  const box = $('help-body');
+  if (!box) return;
+  box.innerHTML = '';
+  HELP_SECS.forEach(([h, ps]) => {
+    const sec = document.createElement('div');
+    sec.className = 'help-sec';
+    const hh = document.createElement('h3'); fillBi(hh, h); sec.appendChild(hh);
+    ps.forEach(k => { const p = document.createElement('p'); fillBi(p, k); sec.appendChild(p); });
+    box.appendChild(sec);
   });
 }
 
@@ -1356,6 +1457,7 @@ function applyAll(){
   renderModes();
   renderIngameModes();
   renderSettings();
+  renderHelp();
   refreshCardTexts();
   renderLog();
   if (MP.kind) mpRenderBars();
@@ -1496,7 +1598,11 @@ function submitName(){
 }
 
 /* ---------- 窄螢幕的「設定」與「紀錄」展開 ---------- */
-$('settings-toggle-btn').addEventListener('click', () => sidebar.classList.toggle('open'));
+/* 設定／說明視窗：點圖示開、點「關閉」或點視窗外面關、按 Esc 關 */
+document.querySelectorAll('[data-open]').forEach(b => b.addEventListener('click', () => $(b.dataset.open).classList.add('show')));
+document.querySelectorAll('[data-close]').forEach(b => b.addEventListener('click', () => $(b.dataset.close).classList.remove('show')));
+['settings-modal', 'help-modal'].forEach(id => $(id).addEventListener('click', e => { if (e.target.id === id) $(id).classList.remove('show'); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') ['settings-modal', 'help-modal'].forEach(id => $(id).classList.remove('show')); });
 $('log-title').addEventListener('click', () => logCol.classList.toggle('open'));
 
 /* ---------- 遊戲紀錄 ---------- */
@@ -1659,7 +1765,6 @@ function resetCommonUI(){
   logEntries = [];
   lastResult = null;
   renderLog();
-  sidebar.classList.remove('open');
   scoreModal.classList.remove('show');
 }
 
